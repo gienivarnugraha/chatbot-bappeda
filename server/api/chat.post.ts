@@ -1,6 +1,3 @@
-import { Readable } from "stream";
-import { generateAnswerFromDocument } from "../utils/rag";
-import util from 'node:util'
 
 export default defineEventHandler(async (event) => {
     const { question, uuid } = await readBody(event)
@@ -21,15 +18,7 @@ export default defineEventHandler(async (event) => {
                 for await (const message of await response.stream({ question }, {
                     configurable: { sessionId: uuid },
                 })) {
-                    console.log(
-                        util.inspect(message, {
-                            showHidden: false,
-                            depth: null,
-                            colors: true
-                        })
-                    )
 
-                    console.log("\n====\n");
                     // @ts-ignore
                     if (message.includes('--END')) {
                         // @ts-ignore

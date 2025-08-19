@@ -1,7 +1,6 @@
 import { Document } from "@langchain/core/documents";
 import { ChatPromptTemplate, MessagesPlaceholder } from "@langchain/core/prompts";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import { getModel } from "#imports";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
@@ -15,7 +14,7 @@ export const embeddings = new GoogleGenerativeAIEmbeddings({
 
 const model = getModel()
 
-const documents = "./public/document.pdf"
+const documents = "/document.pdf"
 
 let messageHistories: { [sessionId: string]: ChatMessageHistory } = {};
 
