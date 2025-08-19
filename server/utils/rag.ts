@@ -8,13 +8,18 @@ import { ChatMessageHistory } from "langchain/stores/message/in_memory";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { RunnablePassthrough, RunnableSequence, RunnableWithMessageHistory } from "@langchain/core/runnables";
 
+import { fileURLToPath } from 'node:url';
+import { readFile } from 'node:fs/promises';
+import { join, resolve } from 'node:path';
+
 export const embeddings = new GoogleGenerativeAIEmbeddings({
     model: "embedding-001",
 });
 
 const model = getModel()
 
-const documents = "/document.pdf"
+const documents = "./public/document.pdf"
+
 
 let messageHistories: { [sessionId: string]: ChatMessageHistory } = {};
 
@@ -45,7 +50,17 @@ const vectorStore = async (docs: Document[]) => {
 }
 
 const createDocumentRetrievalChain = async () => {
-    const loader = new PDFLoader(documents);
+
+    //const assets = useStorage('assets:server');
+    //const doc = await assets.getItem('document.pdf');
+
+    const __dirname = fileURLToPath(new URL('.', import.meta.url));
+    const publicDir = resolve(__dirname, '../../public'); // Adjust path based on your file structure
+    const imagePath = join(publicDir, 'document.pdf');
+
+    console.log(imagePath)
+
+    const loader = new PDFLoader(imagePath);
 
     const docs = await loader.load();
 
