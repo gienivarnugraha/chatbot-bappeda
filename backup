@@ -1,0 +1,191 @@
+const db = await getLangchainDB();
+
+const queryPromptTemplate = await pull<ChatPromptTemplate>(
+    "langchain-ai/sql-query-system-prompt"
+);
+
+/* Write Query */
+const promptQuery = await queryPromptTemplate.invoke({
+    dialect: db.appDataSourceOptions.type,
+    top_k: 10,
+    table_info: await db.getTableInfo(),
+    input: question,
+});
+const queryResult = await structuredLlm.invoke(promptQuery);
+
+/* Execute Query */
+const executeQuery = new QuerySqlTool(db);
+const result = await executeQuery.invoke(queryResult.query)
+
+/* Generate Answer */
+const promptAnswer =
+    "Given the following user question, corresponding SQL query," +
+    "and SQL result, answer the user question.\n\n" +
+    "Please provide a clear, conversational summary that:\n" +
+    "- Directly answers the user's question, do not repeat the statement.\n" +
+    "- Answer in Indonesian Language.\n" +
+    "- Return the answer in Markdown Format.\n" +
+    "- If the answer is a table, format the answer as table in Markdown use pascal case for heading.\n" +
+    `Question: ${question}\n` +
+    `SQL Query: ${queryResult.query}\n` +
+    `SQL Result: ${result}\n`;
+"\n";
+
+/* Generate Response */
+const response = await model.stream(promptAnswer);
+
+const readable = new Readable({
+    read() { }
+})
+
+for await (const chunk of response) {
+
+    console.log(`--${chunk.content}--`)
+
+    readable.push(chunk.content);
+}
+
+return sendStream(event, readable)
+
+
+
+export async function getAnswerFromPDF(question: string, config?: any) {
+
+    try {
+        const model = getModel()
+        const loader = new PDFLoader("./public/document.pdf");
+
+        const docs = await loader.load();
+
+        const embeddings = new VertexAIEmbeddings({
+            model: "text-embedding-004"
+        });
+
+        const textSplitter = new RecursiveCharacterTextSplitter({
+            chunkSize: 1000,
+            chunkOverlap: 200,
+        });
+        const splits = await textSplitter.splitDocuments(docs);
+
+        //const vectorStore = await PGVectorStore.initialize(embeddings, {})
+        //const vectorStore = new FaissStore(embeddings, {});
+        //await vectorStore.addDocuments(splits);
+        // const vectorStore = await MemoryVectorStore.fromDocuments(
+        //     splits,
+        //     new GoogleGenerativeAIEmbeddings()
+        // );
+
+        // Retrieve and generate using the relevant snippets of the blog.
+        const retriever = vectorStore.asRetriever();
+
+        const tool = createRetrieverTool(retriever, {
+            name: "document_retriever",
+            description:
+                "Relays information from the document.",
+        });
+        const tools = [tool];
+        const memory = new MemorySaver();
+
+        const agentExecutor = createReactAgent({
+            llm: model
+            checkpointSaver: memory,
+        })
+
+        config = {
+            ...config,
+            streamMode: 'values'
+        }
+
+        console.log('config', config)
+        /* for await (const s of await agentExecutor2.stream(
+            { messages: [{ role: "user", content: query3 }] },
+            config3
+          )) {
+            console.log(s);
+            console.log("----");
+          } */
+
+        return await agentExecutor.stream({
+            messages: [{ role: "user", content: question }],
+        }, config)
+
+
+    } catch (error) {
+        console.error('Get Answer Error:', error);
+        throw new Error('Failed to get answer from PDF');
+    }
+
+}
+
+// Define state for application
+const InputStateAnnotation = Annotation.Root({
+    question: Annotation<string>,
+});
+
+const StateAnnotation = Annotation.Root({
+    question: Annotation<string>,
+    context: Annotation<Document[]>,
+    answer: Annotation<string>,
+    ...MessagesAnnotation.spec
+});
+
+
+const loader = new PDFLoader(documents);
+
+const docs = await loader.load();
+
+// Define application steps
+const retrieve = async (state: typeof InputStateAnnotation.State) => {
+    const store = await vectorStore(docs)
+    const context = await store.similaritySearch(state.question)
+    return { context };
+};
+
+
+const promptTemplate = await pull<ChatPromptTemplate>("rlm/rag-prompt");
+
+const ANSWER_CHAIN_SYSTEM_TEMPLATE = `You are an experienced researcher,
+expert at interpreting and answering questions based on provided sources.
+Using the below provided context and chat history, 
+answer the user's question to the best of your ability using only the resources provided. 
+- Be verbose!
+- Dont rewrite the question
+- Answer in markdown format!
+- Answer in indonesian language!
+- Display as the table if the user asks for it
+- End the answer with '--END--' mark!
+
+{question}
+
+<context>
+{context}
+</context>`
+
+const answerGenerationChainPrompt = ChatPromptTemplate.fromMessages([
+    ["system", ANSWER_CHAIN_SYSTEM_TEMPLATE],
+    new MessagesPlaceholder("context"),
+    new MessagesPlaceholder("question"),
+]);
+
+
+const generate = async (state: typeof StateAnnotation.State) => {
+    const context = state.context.map(doc => doc.pageContent).join("\n");
+    const messages = await answerGenerationChainPrompt.invoke({ question: state.question, context });
+    const response = await model.pipe(new StringOutputParser()).invoke(messages);
+
+    return { answer: response };
+};
+
+
+const memory = new MemorySaver();
+// Compile application and test
+const graph = new StateGraph(StateAnnotation)
+    .addNode("retrieve", retrieve)
+    .addNode("generate", generate)
+    .addEdge(START, "retrieve")
+    .addEdge("retrieve", "generate")
+    .addEdge("generate", END)
+    .compile({ checkpointer: memory })
+
+
+return graph;
