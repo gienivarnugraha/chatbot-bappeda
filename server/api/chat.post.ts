@@ -1,6 +1,6 @@
 
 export default defineEventHandler(async (event) => {
-    const { question, uuid } = await readBody(event)
+    const { question, uuid, context } = await readBody(event)
 
     setHeaders(event, {
         "cache-control": "no-cache",
@@ -11,14 +11,14 @@ export default defineEventHandler(async (event) => {
     try {
         //@ts-ignore
         //const response = await getQueryResult(question, config)
-        const response = await generateAnswerFromDocument()
+        const response = await generateAnswerFromDocument(context)
 
         const readable = new ReadableStream({
             async pull(controller) {
                 for await (const message of await response.stream({ question }, {
                     configurable: { sessionId: uuid },
                 })) {
-
+                    console.log(message)
                     // @ts-ignore
                     if (message.includes('--END')) {
                         // @ts-ignore

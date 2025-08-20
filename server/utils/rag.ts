@@ -9,20 +9,12 @@ import { StringOutputParser } from "@langchain/core/output_parsers";
 import { RunnablePassthrough, RunnableSequence, RunnableWithMessageHistory } from "@langchain/core/runnables";
 
 import "cheerio";
-import { CheerioWebBaseLoader } from "@langchain/community/document_loaders/web/cheerio";
-
-import { fileURLToPath } from 'node:url';
-import { readFile, readdir } from 'node:fs/promises';
-import { join, resolve } from 'node:path';
 
 export const embeddings = new GoogleGenerativeAIEmbeddings({
     model: "embedding-001",
 });
 
 const model = getModel()
-
-const documents = "./public/document.pdf"
-
 
 let messageHistories: { [sessionId: string]: ChatMessageHistory } = {};
 
@@ -37,7 +29,27 @@ const getMessageHistoryForSession = (sessionId: string) => {
     return newChatSessionHistory;
 };
 
-const vectorStore = async (docs: Document[]) => {
+const getDocument = async (context: string) => {
+    try {
+
+        // const imagePath = join(process.cwd(), 'documents', 'sampah.pdf');
+        //const loader = new PDFLoader(imagePath);
+        let pdfUrl = `https://chatbot-bappeda.vercel.app/documents/${context}.pdf`
+
+        const response = await fetch(pdfUrl);
+
+        const blob = await response.blob();
+
+        const loader = new PDFLoader(blob)
+
+        return await loader.load();
+
+    } catch (error) {
+        throw new Error("Failed to get document");
+    }
+}
+
+const getVectorStore = async (docs: Document[]) => {
 
     const splitter = new RecursiveCharacterTextSplitter({
         chunkSize: 1536, chunkOverlap: 128
@@ -52,32 +64,29 @@ const vectorStore = async (docs: Document[]) => {
     return store
 }
 
-const createDocumentRetrievalChain = async () => {
-    // const imagePath = join(process.cwd(), 'documents', 'sampah.pdf');
-    // console.warn(resolve(imagePath))
+const createDocumentRetrievalChain = async (docs: Document[]) => {
 
-    //const loader = new PDFLoader(imagePath);
-    const loader = new CheerioWebBaseLoader('https://chatbot-bappeda.vercel.app/documents/sampah.pdf')
+    try {
+        const store = await getVectorStore(docs)
 
-    const docs = await loader.load();
+        const retriever = store.asRetriever()
 
-    const store = await vectorStore(docs)
+        const convertDocsToString = (documents: Document[]) => {
+            return documents.map((document) => `<doc>\n${document.pageContent}\n</doc>`).join("\n");
+        };
 
-    const retriever = store.asRetriever()
-
-    const convertDocsToString = (documents: Document[]) => {
-        return documents.map((document) => `<doc>\n${document.pageContent}\n</doc>`).join("\n");
-    };
-
-    // Each of the runnables mentioned will be executed in sequence
-    const documentRetrievalChain = RunnableSequence.from([
-        (input) => input.standalone_question,
-        retriever,
-        convertDocsToString,
-    ]);
+        // Each of the runnables mentioned will be executed in sequence
+        const documentRetrievalChain = RunnableSequence.from([
+            (input) => input.standalone_question,
+            retriever,
+            convertDocsToString,
+        ]);
 
 
-    return documentRetrievalChain;
+        return documentRetrievalChain;
+    } catch (error) {
+        throw new Error("Failed to create document retrieval chain");
+    }
 }
 
 // make a prompt template for the response
@@ -107,32 +116,38 @@ const answerGenerationChainPrompt = ChatPromptTemplate.fromMessages([
 ]);
 
 function createRephraseQuestionChain() {
-    const REPHRASE_QUESTION_SYSTEM_TEMPLATE = `
-    Given the following conversation and a follow up question,
-    rephrase the follow up question to be a standalone question.
-    `;
+    try {
+        const REPHRASE_QUESTION_SYSTEM_TEMPLATE = `
+        Given the following conversation and a follow up question,
+        rephrase the follow up question to be a standalone question.
+        `;
 
-    // Rephrase the question to be a standalone question
-    // along with passing the chat history
-    const rephraseQuestionChainPrompt = ChatPromptTemplate.fromMessages([
-        ["system", REPHRASE_QUESTION_SYSTEM_TEMPLATE],
-        new MessagesPlaceholder("history"),
-        ["human", "Rephrase the following question as a standalone question:\n{question}"],
-    ]);
+        // Rephrase the question to be a standalone question
+        // along with passing the chat history
+        const rephraseQuestionChainPrompt = ChatPromptTemplate.fromMessages([
+            ["system", REPHRASE_QUESTION_SYSTEM_TEMPLATE],
+            new MessagesPlaceholder("history"),
+            ["human", "Rephrase the following question as a standalone question:\n{question}"],
+        ]);
 
-    // Runnable to rephrase the question
-    const rephraseQuestionChain = RunnableSequence.from([
-        rephraseQuestionChainPrompt,
-        model,
-        new StringOutputParser(),
-    ]);
-    return rephraseQuestionChain;
+        // Runnable to rephrase the question
+        const rephraseQuestionChain = RunnableSequence.from([
+            rephraseQuestionChainPrompt,
+            model,
+            new StringOutputParser(),
+        ]);
+        return rephraseQuestionChain;
+    } catch (error) {
+        throw new Error("Failed to create rephrase question chain");
+    }
 }
 // retrieve the document from the vectorstore
 
-export async function generateAnswerFromDocument() {
+export async function generateAnswerFromDocument(context: string) {
 
-    const documentRetrievalChain = await createDocumentRetrievalChain()
+    const docs = await getDocument(context)
+
+    const documentRetrievalChain = await createDocumentRetrievalChain(docs)
 
     const conversationalRetrievalChain = RunnableSequence.from([
         RunnablePassthrough.assign({
