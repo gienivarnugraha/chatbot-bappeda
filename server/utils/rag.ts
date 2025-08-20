@@ -53,7 +53,7 @@ const createDocumentRetrievalChain = async () => {
     // const __dirname = fileURLToPath(new URL('.', import.meta.url));
     // const publicDir = resolve(__dirname, '../../public/documents/'); // Adjust path based on your file structure
     // const imagePath = join(publicDir, 'document.pdf');
-    const imagePath = join(process.cwd(), 'documents', 'document.pdf');
+    const imagePath = join(process.cwd(), 'public', 'documents', 'document.pdf');
 
     console.warn(imagePath)
 
