@@ -54,8 +54,12 @@ const createDocumentRetrievalChain = async () => {
     // const publicDir = resolve(__dirname, '../../public/documents/'); // Adjust path based on your file structure
     // const imagePath = join(publicDir, 'document.pdf');
     const imagePath = join(process.cwd(), 'public', 'documents', 'document.pdf');
+    const imagePath2 = join(process.cwd(), 'documents', 'document.pdf');
 
-    console.warn(imagePath)
+    console.warn(resolve(imagePath))
+    console.warn(readFile(imagePath))
+    console.warn(resolve(imagePath2))
+    console.warn(readFile(imagePath2))
 
     const loader = new PDFLoader(imagePath);
 
