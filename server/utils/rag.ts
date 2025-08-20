@@ -57,7 +57,7 @@ const createDocumentRetrievalChain = async () => {
     const imagePath = join(process.cwd(), 'public', 'documents', 'document.pdf');
     const imagePath2 = join(process.cwd(), 'documents', 'document.pdf');
 
-    console.warn(readdir(imagePath))
+    console.warn(await readdir(dir))
     console.warn(resolve(imagePath))
     console.warn(await readFile(imagePath))
     console.warn(resolve(imagePath2))
