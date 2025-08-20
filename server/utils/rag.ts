@@ -8,6 +8,9 @@ import { ChatMessageHistory } from "langchain/stores/message/in_memory";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { RunnablePassthrough, RunnableSequence, RunnableWithMessageHistory } from "@langchain/core/runnables";
 
+import "cheerio";
+import { CheerioWebBaseLoader } from "@langchain/community/document_loaders/web/cheerio";
+
 import { fileURLToPath } from 'node:url';
 import { readFile, readdir } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
@@ -50,24 +53,11 @@ const vectorStore = async (docs: Document[]) => {
 }
 
 const createDocumentRetrievalChain = async () => {
-    // const __dirname = fileURLToPath(new URL('.', import.meta.url));
-    // const publicDir = resolve(__dirname, '../../public/documents/'); // Adjust path based on your file structure
-    // const imagePath = join(publicDir, 'document.pdf');
-    const dir = join(process.cwd(), 'chunks');
-    console.warn(await readdir(dir))
+    // const imagePath = join(process.cwd(), 'documents', 'sampah.pdf');
+    // console.warn(resolve(imagePath))
 
-    const dir2 = join(process.cwd());
-    console.warn(await readdir(dir2))
-
-    const imagePath = join(process.cwd(), 'documents', 'sampah.pdf');
-    console.warn(resolve(imagePath))
-    console.warn(await readFile(imagePath))
-
-    //const imagePath2 = join(process.cwd(), 'documents', 'document.pdf');
-    //console.warn(resolve(imagePath2))
-    //console.warn(await readFile(imagePath2))
-
-    const loader = new PDFLoader(imagePath);
+    //const loader = new PDFLoader(imagePath);
+    const loader = new CheerioWebBaseLoader('https://chatbot-bappeda.vercel.app/documents/sampah.pdf')
 
     const docs = await loader.load();
 
