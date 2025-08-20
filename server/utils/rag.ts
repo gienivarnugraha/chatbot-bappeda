@@ -9,7 +9,7 @@ import { StringOutputParser } from "@langchain/core/output_parsers";
 import { RunnablePassthrough, RunnableSequence, RunnableWithMessageHistory } from "@langchain/core/runnables";
 
 import { fileURLToPath } from 'node:url';
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 
 export const embeddings = new GoogleGenerativeAIEmbeddings({
@@ -53,13 +53,15 @@ const createDocumentRetrievalChain = async () => {
     // const __dirname = fileURLToPath(new URL('.', import.meta.url));
     // const publicDir = resolve(__dirname, '../../public/documents/'); // Adjust path based on your file structure
     // const imagePath = join(publicDir, 'document.pdf');
+    const dir = join(process.cwd());
     const imagePath = join(process.cwd(), 'public', 'documents', 'document.pdf');
     const imagePath2 = join(process.cwd(), 'documents', 'document.pdf');
 
+    console.warn(readdir(imagePath))
     console.warn(resolve(imagePath))
-    console.warn(readFile(imagePath))
+    console.warn(await readFile(imagePath))
     console.warn(resolve(imagePath2))
-    console.warn(readFile(imagePath2))
+    console.warn(await readFile(imagePath2))
 
     const loader = new PDFLoader(imagePath);
 
