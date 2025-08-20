@@ -32,6 +32,9 @@ importers:
       '@nuxt/ui':
         specifier: 3.3.0
         version: 3.3.0(@babel/parser@7.28.0)(@netlify/blobs@9.1.2)(axios@1.11.0)(change-case@5.4.4)(db0@0.3.2)(embla-carousel@8.6.0)(ioredis@5.6.1)(jwt-decode@4.0.0)(magicast@0.3.5)(typescript@5.8.3)(vite@7.0.6(@types/node@24.1.0)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.43.1)(yaml@2.8.0))(vue-router@4.5.1(vue@3.5.18(typescript@5.8.3)))(vue@3.5.18(typescript@5.8.3))(zod@4.0.14)
+      '@nuxtjs/ngrok':
+        specifier: ^3.0.1
+        version: 3.0.1(magicast@0.3.5)
       cheerio:
         specifier: ^1.1.2
         version: 1.1.2
@@ -1274,6 +1277,87 @@ packages:
     engines: {node: '>=18.14.0'}
     hasBin: true
 
+  '@ngrok/ngrok-android-arm64@1.5.2':
+    resolution: {integrity: sha512-v81VbxxAgg2W7jbjhEcn8K9R2aUf0h1AuTx+8tDlw3L4H1YEmbmllIpBAGgMjHRBxLZKOo5GBi0k7oS+VRM5TA==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [android]
+
+  '@ngrok/ngrok-darwin-arm64@1.5.2':
+    resolution: {integrity: sha512-8CVzS9AveYpNhWbydm7cJ6XqmVg29/VRKF15l4kJ2djlNoJxuGSibgM9A627dWRdnJyj5uhmU3VzsgeU8t+/3g==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@ngrok/ngrok-darwin-universal@1.5.2':
+    resolution: {integrity: sha512-mEMH1OxN6RxnqRSWb4xY9RqbtdlCpv+WlRKxq4lVy8JVsxEyFNnzVQ0jn+iuiy981jCXjokctzJeGMvECuSQBQ==}
+    engines: {node: '>= 10'}
+    os: [darwin]
+
+  '@ngrok/ngrok-darwin-x64@1.5.2':
+    resolution: {integrity: sha512-rGdcADw4NtMSU7SHUTly7uvMVYX6eMeMCppKyL5g3CSlEQntKf3AWs/89ah2TBWJA2WVl0UgGLkXp4xs1tg9eQ==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@ngrok/ngrok-freebsd-x64@1.5.2':
+    resolution: {integrity: sha512-WgY54qUekaUGa5+lFvzYUMjlzf22IEXuZHhxnzJM2/gMqa7gjU8N5W4U8XNDjVW/oz6DekrzIjuoAEPO+2icDg==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [freebsd]
+
+  '@ngrok/ngrok-linux-arm-gnueabihf@1.5.2':
+    resolution: {integrity: sha512-azMxr/TGEeFU4JAUbSu5MO2aZEvdq+TzcxiLw6d+yhdEtNAjDW9TOyCczTrIZPOG5fP8G3lcCd8TP7mVIWdOnw==}
+    engines: {node: '>= 10'}
+    cpu: [arm]
+    os: [linux]
+
+  '@ngrok/ngrok-linux-arm64-gnu@1.5.2':
+    resolution: {integrity: sha512-79eFCxio4rM0ICRBXx/CVvbXDeWk1Jxr7szkezEYWtHaL+gXivrtS1QjtMnJpGY1GJlLTQL+49w2lGydqPOJQA==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@ngrok/ngrok-linux-arm64-musl@1.5.2':
+    resolution: {integrity: sha512-ou9Z7iPQJIQ0RX5bdBhb3y7GwYRt+X0G9tenyRzKLXXvs0XfUUcg/23aBP61hmdRvBq7xpliV1PnvEVBgUIYMg==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@ngrok/ngrok-linux-x64-gnu@1.5.2':
+    resolution: {integrity: sha512-VI1mmtl3Ie5uXTVAR9thPiMNMsCWeqkjBUbHAyk2vZ2OXR4Vs2DGjOPXK+wTl/hjF29FXoxunjhMy6caF9ht0Q==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@ngrok/ngrok-linux-x64-musl@1.5.2':
+    resolution: {integrity: sha512-F4j9EyC/0R3IgYSd+OER4bC8bxuBubvj33e24GvQnRF/IQaKhpybkvQbz54fnvsL7y0j2BB42NAIm2CFtk7tCw==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@ngrok/ngrok-win32-arm64-msvc@1.5.2':
+    resolution: {integrity: sha512-0OMXNjWElM1MQX7lMBnpRtafS9+3ybauqGD4m2dZcIm6hFvexsJFwNgx0mCa5aKxe2mQ4zNarEUd+SqG2Aa4/g==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@ngrok/ngrok-win32-ia32-msvc@1.5.2':
+    resolution: {integrity: sha512-hdvhnr7Br4XhUblpW67v5XP6FyoQwJ2xSbwas4KW4hZ3F4cw0m6sqXpssRfmqg3/5HJony1H5B2jLi0x4J7uOw==}
+    engines: {node: '>= 10'}
+    cpu: [ia32]
+    os: [win32]
+
+  '@ngrok/ngrok-win32-x64-msvc@1.5.2':
+    resolution: {integrity: sha512-aHuMiRti9Taow9DlYLGVmu9CXtXD/v4CBQWpZlmt7VGuK1KsTWWLaGIBFVp6UXnyW87b0A+KC69Kn/Xjylw+sg==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [win32]
+
+  '@ngrok/ngrok@1.5.2':
+    resolution: {integrity: sha512-gN7KKdLTKer+wBSk9s9eDx53MUFdcnXNHsXxiC5sJLLD5HY9JRMSn6UzcCqnk7IgeIgCgw5h1k6YDqhjx6lmtg==}
+    engines: {node: '>= 10'}
+
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
     engines: {node: '>= 8'}
@@ -1406,6 +1490,9 @@ packages:
 
   '@nuxtjs/color-mode@3.5.2':
     resolution: {integrity: sha512-cC6RfgZh3guHBMLLjrBB2Uti5eUoGM9KyauOaYS9ETmxNWBMTvpgjvSiSJp1OFljIXPIqVTJ3xtJpSNZiO3ZaA==}
+
+  '@nuxtjs/ngrok@3.0.1':
+    resolution: {integrity: sha512-p5+9MBesHGFZI9PlhUyYF7PKSzhkw5KHACHT9N8/CJ7aVdUS1fUavds6R2swjtjYV2X0fiQtNlv8ILYwHKfi8A==}
 
   '@oxc-minify/binding-android-arm64@0.78.0':
     resolution: {integrity: sha512-tza8rCLefHlwksl+uVgdwHtmGKotOYSnJ5PPOdgATgOc+JqQPDbZqf68aTUU8y1VnrOR2bi7iYDFiY6RbkpKQA==}
@@ -7489,6 +7576,61 @@ snapshots:
       - rollup
       - supports-color
 
+  '@ngrok/ngrok-android-arm64@1.5.2':
+    optional: true
+
+  '@ngrok/ngrok-darwin-arm64@1.5.2':
+    optional: true
+
+  '@ngrok/ngrok-darwin-universal@1.5.2':
+    optional: true
+
+  '@ngrok/ngrok-darwin-x64@1.5.2':
+    optional: true
+
+  '@ngrok/ngrok-freebsd-x64@1.5.2':
+    optional: true
+
+  '@ngrok/ngrok-linux-arm-gnueabihf@1.5.2':
+    optional: true
+
+  '@ngrok/ngrok-linux-arm64-gnu@1.5.2':
+    optional: true
+
+  '@ngrok/ngrok-linux-arm64-musl@1.5.2':
+    optional: true
+
+  '@ngrok/ngrok-linux-x64-gnu@1.5.2':
+    optional: true
+
+  '@ngrok/ngrok-linux-x64-musl@1.5.2':
+    optional: true
+
+  '@ngrok/ngrok-win32-arm64-msvc@1.5.2':
+    optional: true
+
+  '@ngrok/ngrok-win32-ia32-msvc@1.5.2':
+    optional: true
+
+  '@ngrok/ngrok-win32-x64-msvc@1.5.2':
+    optional: true
+
+  '@ngrok/ngrok@1.5.2':
+    optionalDependencies:
+      '@ngrok/ngrok-android-arm64': 1.5.2
+      '@ngrok/ngrok-darwin-arm64': 1.5.2
+      '@ngrok/ngrok-darwin-universal': 1.5.2
+      '@ngrok/ngrok-darwin-x64': 1.5.2
+      '@ngrok/ngrok-freebsd-x64': 1.5.2
+      '@ngrok/ngrok-linux-arm-gnueabihf': 1.5.2
+      '@ngrok/ngrok-linux-arm64-gnu': 1.5.2
+      '@ngrok/ngrok-linux-arm64-musl': 1.5.2
+      '@ngrok/ngrok-linux-x64-gnu': 1.5.2
+      '@ngrok/ngrok-linux-x64-musl': 1.5.2
+      '@ngrok/ngrok-win32-arm64-msvc': 1.5.2
+      '@ngrok/ngrok-win32-ia32-msvc': 1.5.2
+      '@ngrok/ngrok-win32-x64-msvc': 1.5.2
+
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
       '@nodelib/fs.stat': 2.0.5
@@ -7969,6 +8111,15 @@ snapshots:
       pathe: 1.1.2
       pkg-types: 1.3.1
       semver: 7.7.2
+    transitivePeerDependencies:
+      - magicast
+
+  '@nuxtjs/ngrok@3.0.1(magicast@0.3.5)':
+    dependencies:
+      '@ngrok/ngrok': 1.5.2
+      '@nuxt/kit': 3.18.0(magicast@0.3.5)
+      consola: 3.4.2
+      defu: 6.1.4
     transitivePeerDependencies:
       - magicast
 

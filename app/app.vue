@@ -1,16 +1,16 @@
 <template>
   <UApp>
 
-    <div class="flex  items-start justify-center h-screen p-8">
-      <UCard class="flex w-30  " title="konteks">
+    <div class="xs:flex-col md:flex  items-start justify-center h-screen p-8">
+      <UCard class="xs:flex-col md:flex xs:w-full md:w-42   ">
         <p class="text-xs text-amber-200">Konteks pertanyaan:</p>
 
-        <UButton v-for="{ name } in contexts" class="my-2 w-full" :disabled="context === name"
+        <UButton v-for="{ name } in contexts" class="m-2 xs:w-full md:w-24" :disabled="context === name"
           @click="handleContext(name)"> {{ toUpperFirst(name) }}
         </UButton>
       </UCard>
 
-      <UCard class="w-2xl h-3xl ">
+      <UCard class="xs:w-full md:w-2xl h-3xl ">
         <template #header>
           <div class="flex justify-between items-center">
             <h1>{{ context && toUpperFirst(findContext(context).name) || 'Home' }}</h1>

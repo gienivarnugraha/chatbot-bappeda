@@ -9,6 +9,7 @@ import { StringOutputParser } from "@langchain/core/output_parsers";
 import { RunnablePassthrough, RunnableSequence, RunnableWithMessageHistory } from "@langchain/core/runnables";
 
 import "cheerio";
+import { join, resolve } from 'node:path';
 
 export const embeddings = new GoogleGenerativeAIEmbeddings({
     model: "embedding-001",
@@ -32,15 +33,14 @@ const getMessageHistoryForSession = (sessionId: string) => {
 const getDocument = async (context: string) => {
     try {
 
-        // const imagePath = join(process.cwd(), 'documents', 'sampah.pdf');
+        const docs = resolve(join('./public', 'documents', `${context}.pdf`));
+        console.log(docs)
         //const loader = new PDFLoader(imagePath);
-        let pdfUrl = `https://chatbot-bappeda.vercel.app/documents/${context}.pdf`
+        // let pdfUrl = `https://chatbot-bappeda.vercel.app/documents/${context}.pdf`
+        // const response = await fetch(pdfUrl);
+        // const blob = await response.blob();
 
-        const response = await fetch(pdfUrl);
-
-        const blob = await response.blob();
-
-        const loader = new PDFLoader(blob)
+        const loader = new PDFLoader(docs)
 
         return await loader.load();
 
