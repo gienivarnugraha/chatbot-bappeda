@@ -50,15 +50,12 @@ const vectorStore = async (docs: Document[]) => {
 }
 
 const createDocumentRetrievalChain = async () => {
+    // const __dirname = fileURLToPath(new URL('.', import.meta.url));
+    // const publicDir = resolve(__dirname, '../../public/documents/'); // Adjust path based on your file structure
+    // const imagePath = join(publicDir, 'document.pdf');
+    const imagePath = join(process.cwd(), 'public', 'document.pdf');
 
-    //const assets = useStorage('assets:server');
-    //const doc = await assets.getItem('document.pdf');
-
-    const __dirname = fileURLToPath(new URL('.', import.meta.url));
-    const publicDir = resolve(__dirname, '../../public'); // Adjust path based on your file structure
-    const imagePath = join(publicDir, 'document.pdf');
-
-    console.log(imagePath)
+    console.warn(imagePath)
 
     const loader = new PDFLoader(imagePath);
 
