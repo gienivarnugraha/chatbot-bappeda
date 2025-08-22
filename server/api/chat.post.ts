@@ -1,3 +1,5 @@
+import { generateAnwserFromDB } from "../utils/sql";
+
 
 export default defineEventHandler(async (event) => {
     const { question, uuid, context } = await readBody(event)
@@ -10,7 +12,7 @@ export default defineEventHandler(async (event) => {
 
     try {
         //@ts-ignore
-        //const response = await getQueryResult(question, config)
+        // const response = await generateAnwserFromDB()
         const response = await generateAnswerFromDocument(context)
 
         const readable = new ReadableStream({

@@ -8,7 +8,6 @@ import { ChatMessageHistory } from "langchain/stores/message/in_memory";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { RunnablePassthrough, RunnableSequence, RunnableWithMessageHistory } from "@langchain/core/runnables";
 
-import "cheerio";
 import { join, resolve } from 'node:path';
 
 export const embeddings = new GoogleGenerativeAIEmbeddings({
@@ -34,7 +33,6 @@ const getDocument = async (context: string) => {
     try {
 
         const docs = resolve(join('./public', 'documents', `${context}.pdf`));
-        console.log(docs)
         //const loader = new PDFLoader(imagePath);
         // let pdfUrl = `https://chatbot-bappeda.vercel.app/documents/${context}.pdf`
         // const response = await fetch(pdfUrl);
@@ -96,6 +94,7 @@ Using the below provided context and chat history, answer the user's question to
 - Be verbose!
 - Don't rewrite the question.-
 - Answer in markdown format!
+- Include the page number, page title as markdown link
 - Answer in indonesian langugage!
 - End the answer with '--END--' mark!
 
@@ -166,6 +165,8 @@ export async function generateAnswerFromDocument(context: string) {
         inputMessagesKey: "question",
         historyMessagesKey: "history",
     }).pipe(new StringOutputParser())
+
+    console.log(finalRetrievalChain)
 
     return finalRetrievalChain;
 }
