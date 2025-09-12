@@ -1,20 +1,12 @@
-import { Document } from "@langchain/core/documents";
 import { ChatPromptTemplate, MessagesPlaceholder } from "@langchain/core/prompts";
-import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
-import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
-import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { ChatMessageHistory } from "langchain/stores/message/in_memory";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { RunnablePassthrough, RunnableSequence, RunnableWithMessageHistory } from "@langchain/core/runnables";
+import { formatDocumentsAsString } from "langchain/util/document";
+import { z } from 'zod'
+import { getVectorStore, getModel } from "./ai";
 
-import { join, resolve } from 'node:path';
-
-export const embeddings = new GoogleGenerativeAIEmbeddings({
-    model: "embedding-001",
-});
-
-const model = getModel()
+// const model = getModel('google')
 
 let messageHistories: { [sessionId: string]: ChatMessageHistory } = {};
 
@@ -29,144 +21,113 @@ const getMessageHistoryForSession = (sessionId: string) => {
     return newChatSessionHistory;
 };
 
-const getDocument = async (context: string) => {
-    try {
+const analyzeQuestionChain = () => {
 
-        const docs = resolve(join('./public', 'documents', `${context}.pdf`));
-        //const loader = new PDFLoader(imagePath);
-        // let pdfUrl = `https://chatbot-bappeda.vercel.app/documents/${context}.pdf`
-        // const response = await fetch(pdfUrl);
-        // const blob = await response.blob();
+    const model = getModel('google')
 
-        const loader = new PDFLoader(docs)
+    const filterStructure = z.object({
+        query: z.string().describe("Query context based on the question"),
+    })
 
-        return await loader.load();
+    const analyzeQuestion = `
+    You're a helpful AI assistant.
 
-    } catch (error) {
-        throw new Error("Failed to get document");
-    }
-}
+    Given a user question. 
+    {question}
 
-const getVectorStore = async (docs: Document[]) => {
+    Your task is to reprhase the question in postgres vector filtering language
+    then translate to indonesia
+    `
 
-    const splitter = new RecursiveCharacterTextSplitter({
-        chunkSize: 1536, chunkOverlap: 128
-    });
-    const allSplits = await splitter.splitDocuments(docs);
-
-    const store = new MemoryVectorStore(embeddings);
-
-    // Index chunks
-    await store.addDocuments(allSplits)
-
-    return store
-}
-
-const createDocumentRetrievalChain = async (docs: Document[]) => {
-
-    try {
-        const store = await getVectorStore(docs)
-
-        const retriever = store.asRetriever()
-
-        const convertDocsToString = (documents: Document[]) => {
-            return documents.map((document) => `<doc>\n${document.pageContent}\n</doc>`).join("\n");
-        };
-
-        // Each of the runnables mentioned will be executed in sequence
-        const documentRetrievalChain = RunnableSequence.from([
-            (input) => input.standalone_question,
-            retriever,
-            convertDocsToString,
-        ]);
-
-
-        return documentRetrievalChain;
-    } catch (error) {
-        throw new Error("Failed to create document retrieval chain");
-    }
-}
-
-// make a prompt template for the response
-const ANSWER_CHAIN_SYSTEM_TEMPLATE = `You are an experienced researcher,
-expert at interpreting and answering questions based on provided sources.
-Using the below provided context and chat history, answer the user's question to the best of your ability using only the resources provided. 
-- Be verbose!
-- Don't rewrite the question.-
-- Answer in markdown format!
-- Include the page number, page title as markdown link
-- Answer in indonesian langugage!
-- End the answer with '--END--' mark!
-
-<context>
-{context}
-</context>`;
-
-// Define prompt for question-answering
-const answerGenerationChainPrompt = ChatPromptTemplate.fromMessages([
-    ["system", ANSWER_CHAIN_SYSTEM_TEMPLATE],
-    new MessagesPlaceholder("history"),
-    [
-        "human",
-        `Now, answer this question using the previous context and chat history:
-
-    {standalone_question}`
-    ]
-]);
-
-function createRephraseQuestionChain() {
-    try {
-        const REPHRASE_QUESTION_SYSTEM_TEMPLATE = `
-        Given the following conversation and a follow up question,
-        rephrase the follow up question to be a standalone question.
-        `;
-
-        // Rephrase the question to be a standalone question
-        // along with passing the chat history
-        const rephraseQuestionChainPrompt = ChatPromptTemplate.fromMessages([
-            ["system", REPHRASE_QUESTION_SYSTEM_TEMPLATE],
-            new MessagesPlaceholder("history"),
-            ["human", "Rephrase the following question as a standalone question:\n{question}"],
-        ]);
-
-        // Runnable to rephrase the question
-        const rephraseQuestionChain = RunnableSequence.from([
-            rephraseQuestionChainPrompt,
-            model,
-            new StringOutputParser(),
-        ]);
-        return rephraseQuestionChain;
-    } catch (error) {
-        throw new Error("Failed to create rephrase question chain");
-    }
-}
-// retrieve the document from the vectorstore
-
-export async function generateAnswerFromDocument(context: string) {
-
-    const docs = await getDocument(context)
-
-    const documentRetrievalChain = await createDocumentRetrievalChain(docs)
-
-    const conversationalRetrievalChain = RunnableSequence.from([
-        RunnablePassthrough.assign({
-            standalone_question: createRephraseQuestionChain,
-        }),
-        RunnablePassthrough.assign({
-            context: documentRetrievalChain,
-        }),
-        answerGenerationChainPrompt,
-        model,
+    const analyzePrompt = ChatPromptTemplate.fromMessages([
+        ["system", analyzeQuestion],
+        ["human", "{question}"],
     ]);
 
-    const finalRetrievalChain = new RunnableWithMessageHistory({
-        runnable: conversationalRetrievalChain,
-        getMessageHistory: getMessageHistoryForSession,
-        inputMessagesKey: "question",
-        historyMessagesKey: "history",
-    }).pipe(new StringOutputParser())
+    return RunnableSequence.from([
+        {
+            question: new RunnablePassthrough(),
+        },
+        analyzePrompt,
+        model.withStructuredOutput(filterStructure),
+    ])
+}
 
-    console.log(finalRetrievalChain)
 
-    return finalRetrievalChain;
+/**
+ * Given a user question, retrieve relevant context from the vectorstore to answer the question
+ * @param input query string to retrieve relevant context
+ * @returns a chain of runnables that will return the relevant context as a string
+ */
+
+const getContextChain = async () => {
+    const retriever = getVectorStore()
+
+    return RunnableSequence.from([
+        {
+            question: (input) => input.question,
+        },
+        analyzeQuestionChain,
+        (input) => input.query,
+        retriever.asRetriever(),
+        //formatDocumentsAsString
+    ])
+}
+
+const ANSWER_TEMPLATE = `You're a helpful AI assistant. 
+
+    Given a user question, question and context. 
+    If none of the articles answer the question, just say you don't know.
+    Your task is to provide a accurate and detailed answer to the user's question based ONLY on the provided context include relevant table or image if needed
+
+    - Return the answer with markdown format
+    - Return the source of information at the end of the answer like document file name or location
+    - if the answer contains a table, format the answer as table in Markdown use title case for heading
+    - if the answer contains a list, format the answer as Markdown lists
+    - Answer in indonesian language
+    - End the answer with --END--
+    
+    Context 
+    {context}
+
+    Question: {question}
+
+    Answer:
+    Source:
+`;
+
+const answerPrompt = ChatPromptTemplate.fromMessages([
+    ["system", ANSWER_TEMPLATE],
+    // new MessagesPlaceholder("history"),
+    ["human", "{question}"],
+]);
+
+
+export function generateAnswerFromDocument() {
+
+    const model = getModel('google')
+
+    const answerChain = RunnableSequence.from([
+        {
+            question: new RunnablePassthrough(),
+        },
+        RunnablePassthrough.assign({
+            context: getContextChain,
+            question: (input) => input.question,
+        }),
+        answerPrompt,
+        model,
+        new StringOutputParser
+    ])
+
+    return answerChain
+
+    // const finalRetrievalChain = new RunnableWithMessageHistory({
+    //     runnable: answerChain,
+    //     getMessageHistory: getMessageHistoryForSession,
+    //     inputMessagesKey: "question",
+    //     historyMessagesKey: "history",
+    // }).pipe(new StringOutputParser())
+
+    // return finalRetrievalChain;
 }

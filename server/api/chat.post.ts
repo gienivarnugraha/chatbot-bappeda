@@ -1,8 +1,5 @@
-import { generateAnwserFromDB } from "../utils/sql";
-
-
 export default defineEventHandler(async (event) => {
-    const { question, uuid, context } = await readBody(event)
+    const { question, uuid } = await readBody(event)
 
     setHeaders(event, {
         "cache-control": "no-cache",
@@ -13,7 +10,7 @@ export default defineEventHandler(async (event) => {
     try {
         //@ts-ignore
         // const response = await generateAnwserFromDB()
-        const response = await generateAnswerFromDocument(context)
+        const response = generateAnswerFromDocument()
 
         const readable = new ReadableStream({
             async pull(controller) {
@@ -23,6 +20,7 @@ export default defineEventHandler(async (event) => {
                     console.log(message)
                     // @ts-ignore
                     if (message.includes('--END')) {
+
                         // @ts-ignore
                         let end = message.replace('--END--', '')
 
