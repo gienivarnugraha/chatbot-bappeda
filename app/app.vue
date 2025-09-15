@@ -1,11 +1,11 @@
 <template>
   <UApp>
     <!-- class="grid md:grid-cols-2 grid-cols-1 bg-[url('/bg.png')] dark:bg-[url('/bg-dark.png')] bg-no-repeat bg-cover bg-center md:bg-none!"  -->
-    <div class="relative  h-full ">
+    <div class="relative min-h-screen  h-full ">
 
       <!-- BACKGROUND -->
       <div
-        class="absolute inset-0 bg-[url('/bg.png')] dark:bg-[url('/bg-dark.png')] bg-repeat-x bg-size-[auto_50%] bg-bottom opacity-75">
+        class="fixed inset-0 bg-[url('/bg.png')] dark:bg-[url('/bg-dark.png')] bg-repeat-x bg-size-[auto_50%] bg-bottom opacity-75">
       </div>
       <!-- <div class="absolute inset-0 bg-[url('/bg_2.png')]  bg-no-repeat bg-top bg-contain opacity-25"></div> -->
       <div class="absolute inset-0 bg-linear-to-b from-gray-100 to-cyan-300 dark:to-cyan-300 opacity-10"></div>
@@ -13,38 +13,43 @@
 
 
       <div class="relative">
-        <div class=" flex justify-between items-center w-full px-4 py-2 bg-primary">
-          <div class="flex gap-2 items-center">
-            <img src="/icon.png" alt="logo" class="max-w-8"></img>
-            <div class="flex flex-col">
-              <p class="text-lg">BAPPEDA</p>
-              <p class="text-xs">KOTA SEMARANG</p>
+        <div class="relative  w-full px-4">
+          <div class="absolute inset-0 bg-primary"></div>
+          <div class="relative flex justify-between items-center">
 
+            <div class="flex gap-2 items-center">
+              <img src="/icon.png" alt="logo" class="max-w-8"></img>
+              <div class="flex flex-col">
+                <p class="text-lg">BAPPEDA</p>
+                <p class="text-xs">KOTA SEMARANG</p>
+              </div>
             </div>
+            <h1> Home </h1>
+            <ColorMode class="w-8" />
           </div>
-          <h1> Home </h1>
-          <ColorMode class="w-8" />
 
         </div>
       </div>
 
       <div class="relative flex flex-col items-center justify-center p-4">
 
-        <div v-show="isFirstMessage" class="flex flex-col gap-2 items-center justify-center my-16 transition">
+        <motion.div :initial="{ scale: 0 }" :animate="{ scale: 1 }" v-show="isFirstMessage"
+          class="flex flex-col gap-2 items-center justify-center my-16 transition">
           <img src="/icon.png" alt="logo" class="max-w-20"></img>
           <h2 class="text-md text-center font-light">Badan Pembangunan Daerah</h2>
           <h1 class="text-4xl text-center font-bold">KOTA SEMARANG</h1>
           <h1 class="text-5xl text-center font-bold">Big Data AI Chatbot</h1>
           <h3 class="text-md text-center font-light">Layanan Cerdas, Informasi Cepat, Semarang di Ujung Jari Anda.</h3>
-        </div>
+        </motion.div>
 
         <!-- Question and Answer -->
-        <UCard class="w-full max-w-2xl h-full">
+        <UCard :initial="{ scale: 0 }" :animate="{ scale: 1 }" class="w-full max-w-2xl h-full">
           <!-- <template #header>
             
           </template> -->
 
-          <div v-show="!isFirstMessage" class="flex-col min-h-48 max-h-96 overflow-y-auto transition" ref="content">
+          <!-- Conversation -->
+          <div v-show="!isFirstMessage" class="flex-col min-h-64 max-h-96 overflow-y-auto transition" ref="content">
             <div v-for="(message, index) in messages" class="my-2">
               <div class="flex justify-end gap-4 items-center" v-if="message.role === 'user'">
                 <p class="prose max-w-1/2 bg-secondary p-4 rounded-lg ">
@@ -70,16 +75,16 @@
 
             </div>
           </div>
+          <!-- Conversation End -->
 
-
-          <div class="flex">
-            <UInput v-model="question" variant="subtle" size="lg" class="w-full pr-4" placeholder="Ask assistant"
+          <div class="flex mt-4">
+            <UInput v-model="question" variant="subtle" size="lg" class="w-full pr-4" placeholder="Tanya Saya"
               :loading="loading" :disabled="loading" @keydown.enter.exact.prevent="handleSubmit" />
             <UButton v-if="loading" @click.prevent="handleCancel" color="error" icon="i-lucide-x">Cancel
             </UButton>
             <UButton v-else @click.prevent="handleSubmit" :disabled="question.length === 0" icon="i-lucide-send"
               :loading="loading">
-              Submit
+              Tanya
             </UButton>
           </div>
 
@@ -121,6 +126,7 @@
 
 <script setup lang="ts">
 import { v4 as uuid } from 'uuid'
+import { motion } from "motion-v"
 
 const toast = useToast()
 

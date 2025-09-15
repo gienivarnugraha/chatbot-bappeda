@@ -25,6 +25,7 @@
     "dotenv": "^17.2.2",
     "langchain": "^0.3.30",
     "markdown-it": "^14.1.0",
+    "motion-v": "^1.7.1",
     "nuxt": "^4.0.1",
     "pdf-parse": "^1.1.1",
     "pg": "^8.16.3",

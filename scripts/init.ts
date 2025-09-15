@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import { join, resolve, extname, basename } from 'node:path';
-import { readdir } from 'node:fs';
+import { readdir, writeFile } from 'node:fs';
 import { PDFLoader } from "./pdfLoader";
 import postgres from 'postgres';
 import { MultiFileLoader } from 'langchain/document_loaders/fs/multi_file';
@@ -24,7 +24,7 @@ import { TextLoader } from "langchain/document_loaders/fs/text";
 
 const convertToMarkdown = async (command: string) => {
     const sourceDirectory = './pdfs_to_convert';
-    const pythonScript = 'markwodn.py';
+    const pythonScript = 'markdown.py';
 
     const scriptPath = join(__dirname, pythonScript);
 
@@ -183,12 +183,13 @@ async function loadDocuments(docs: string[]): Promise<Document[]> {
     console.log('list', docs)
 
     const loader = new MultiFileLoader(docs, {
-        '.pdf': (path) => new PDFLoader(path, {
-            parsedItemSeparator: ' ',
-            metadata: {
-                filename: basename(path, extname(path)),
-            },
-        }),
+        // '.pdf': (path) => new PDFLoader(path, {
+        //     parsedItemSeparator: ' ',
+        //     metadata: {
+        //         filename: basename(path, extname(path)),
+        //     },
+        // }),
+        '.md': (path) => new TextLoader(path)
     });
 
     return await loader.load();
@@ -201,7 +202,6 @@ async function summarize(docs: Document[]): Promise<Document[]> {
         title: z.string().describe("Title of the document"),
         summary: z.string().describe("Summary of the document"),
         content: z.string().describe("Full content of the document"),
-        context: z.string().describe("Context of the summary"),
         loc: z.object({
             pageNumber: z.number().describe("Page number"),
             section: z.string().describe("section name from the document"),
@@ -217,14 +217,22 @@ async function summarize(docs: Document[]): Promise<Document[]> {
     const chain = RunnableSequence.from([
         {
             content: (doc: Document) => doc.pageContent,
-            pageNumber: (doc: Document) => doc.metadata.pageNumber,
-            source: (doc: Document) => doc.metadata.filename,
+            metadata: (doc: Document) => doc.metadata,
         },
         PromptTemplate.fromTemplate(`
+            You're a helpful AI assistant. 
+
+            Given a context of a markdown content. 
+
+            - remove all header and footer text usually duplicate with page number
+            - remove unnecesary whitelines
+            - if some context contains a separated table join it into one table
+            - DO NOT REMOVE ANYTHING FROM THE CONTEXT, ONLY REMOVE UNNECESARY WHITELINES, HEADER AND FOOTER TEXT
+
             Summarize in indonesian language the following document with no more than 5 sentence:\n\n{content}, 
             and give context with no more than 5 words what is it about based on the content,
             give section name from the document usually start with ordered number or roman number its okay if it has the same section name from previous document,
-            and provide the title of the document, file source {source} , page number {pageNumber} and line location of the information
+            and provide additional information from metadata like the title of the document, source (filename or document name) , page number and line location of the information
 
             `),
         model.withStructuredOutput(queryOutput),
@@ -234,13 +242,12 @@ async function summarize(docs: Document[]): Promise<Document[]> {
         maxConcurrency: 1,
     });
 
-    return summaries.map((summaryMap, i) => {
-        const { summary, content, context, loc, title } = summaryMap
+    return summaries.map(summaryMap => {
+        const { summary, content, loc, title } = summaryMap
 
         return new Document({
             pageContent: content,
             metadata: {
-                context: context,
                 summary: summary,
                 loc: loc,
                 title: title
@@ -249,64 +256,51 @@ async function summarize(docs: Document[]): Promise<Document[]> {
     });
 }
 
-
-const answerTemplate = ChatPromptTemplate.fromTemplate(`You're a helpful AI assistant. 
-
-    Given a context of a markdown content. 
-    - remove all header and footer text usually with page number
-    - remove unnecesary whitelines
-    - if some context contains a separated table join it into one table
-    - Return the answer with markdown format
-    - DO NOT REMOVE ANYTHING FROM THE CONTEXT, ONLY REMOVE UNNECESARY WHITELINES, HEADER AND FOOTER TEXT
-    
-    Context 
-    {context}
-
-`);
-
+const writeToFile = (filename: string, content: string) => {
+    writeFile(`./public/documents/${filename}`, content, err => {
+        if (err) {
+            console.log(err)
+        }
+    })
+}
 
 async function run() {
     try {
         // await createTable()
 
-        // const folderpath = resolve(join('./public', 'documents'));
+        const folderpath = resolve(join('./public', 'documents'));
 
-        // const docs = await listDocuments(folderpath)
+        const docs = await listDocuments(folderpath)
 
-        // const loaders = await loadDocuments(docs)
+        const loaders = await loadDocuments(docs)
 
-        const model = getModel('google')
+        // const model = getModel('google')
 
-        const doc = new TextLoader('./public/documents/sampah/sampah.md')
+        // const doc = new TextLoader('./public/documents/sampah.md')
 
-        const loaders = await doc.load()
+        // const loaders = await doc.load()
 
-        const purify = await answerTemplate.pipe(model).pipe(new StringOutputParser()).invoke({ context: loaders })
+        // const markdownSplitter = new MarkdownTextSplitter({
+        //     chunkSize: 10000,
+        //     chunkOverlap: 20,
+        //     keepSeparator: false,
+        // });
 
-        console.log(inspect(purify, false, null, true))
+        // const split = await markdownSplitter.splitDocuments(loaders)
 
-        const splitter = new MarkdownTextSplitter({
-            chunkSize: 10000,
-            chunkOverlap: 20,
-            // separators: ["\n\n", "\n", ".", " "],
-            keepSeparator: false,
-        });
+        const split = await splitDocuments(loaders)
 
-        const split = await splitter.splitText(purify)
+        const summaries = await summarize(split)
 
-        console.log(inspect(split, false, null, true))
+        writeToFile('sampah_summary.json', JSON.stringify(summaries))
 
-        // const split = await splitDocuments(loaders)
+        const retriever = getRetriever()
 
-        // const summaries = await summarize(split)
-
-        // const retriever = getRetriever()
-
-        // await retriever.addDocuments(summaries);
+        await retriever.addDocuments(summaries);
 
         // const generate = generateAnswerFromDocument()
 
-        // const result = await generate.invoke('berapa jumlah sampah di semarang')
+        // const result = await generate.invoke('kuantifikasi skenario pengurangan sampah')
 
         // console.log(inspect(result, false, null, true))
 
