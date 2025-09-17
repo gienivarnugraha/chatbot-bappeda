@@ -41,6 +41,9 @@ importers:
       '@supabase/supabase-js':
         specifier: ^2.57.0
         version: 2.57.0
+      cheerio:
+        specifier: ^1.1.2
+        version: 1.1.2
       dotenv:
         specifier: ^17.2.2
         version: 17.2.2
@@ -10000,7 +10003,6 @@ snapshots:
       domelementtype: 2.3.0
       domhandler: 5.0.3
       domutils: 3.2.2
-    optional: true
 
   cheerio@1.1.2:
     dependencies:
@@ -10015,7 +10017,6 @@ snapshots:
       parse5-parser-stream: 7.1.2
       undici: 7.14.0
       whatwg-mimetype: 4.0.0
-    optional: true
 
   chokidar@3.6.0:
     dependencies:
@@ -10498,7 +10499,6 @@ snapshots:
     dependencies:
       iconv-lite: 0.6.3
       whatwg-encoding: 3.1.1
-    optional: true
 
   end-of-stream@1.4.5:
     dependencies:
@@ -11357,7 +11357,6 @@ snapshots:
       domhandler: 5.0.3
       domutils: 3.2.2
       entities: 6.0.1
-    optional: true
 
   http-errors@2.0.0:
     dependencies:
@@ -11399,7 +11398,7 @@ snapshots:
       isstream: 0.1.2
       jsonwebtoken: 9.0.2
       mime-types: 2.1.35
-      retry-axios: 2.6.0(axios@1.11.0)
+      retry-axios: 2.6.0(axios@1.11.0(debug@4.4.1))
       tough-cookie: 4.1.4
     transitivePeerDependencies:
       - supports-color
@@ -11407,7 +11406,6 @@ snapshots:
   iconv-lite@0.6.3:
     dependencies:
       safer-buffer: 2.1.2
-    optional: true
 
   ieee754@1.2.1: {}
 
@@ -12898,12 +12896,10 @@ snapshots:
     dependencies:
       domhandler: 5.0.3
       parse5: 7.3.0
-    optional: true
 
   parse5-parser-stream@7.1.2:
     dependencies:
       parse5: 7.3.0
-    optional: true
 
   parse5@7.3.0:
     dependencies:
@@ -13544,7 +13540,7 @@ snapshots:
 
   restructure@3.0.2: {}
 
-  retry-axios@2.6.0(axios@1.11.0):
+  retry-axios@2.6.0(axios@1.11.0(debug@4.4.1)):
     dependencies:
       axios: 1.11.0(debug@4.4.1)
 
@@ -13601,8 +13597,7 @@ snapshots:
 
   safe-stable-stringify@2.5.0: {}
 
-  safer-buffer@2.1.2:
-    optional: true
+  safer-buffer@2.1.2: {}
 
   sax@1.4.1: {}
 
@@ -14083,8 +14078,7 @@ snapshots:
 
   undici-types@7.8.0: {}
 
-  undici@7.14.0:
-    optional: true
+  undici@7.14.0: {}
 
   unenv@2.0.0-rc.19:
     dependencies:
@@ -14584,12 +14578,10 @@ snapshots:
   whatwg-encoding@3.1.1:
     dependencies:
       iconv-lite: 0.6.3
-    optional: true
 
   whatwg-fetch@3.6.20: {}
 
-  whatwg-mimetype@4.0.0:
-    optional: true
+  whatwg-mimetype@4.0.0: {}
 
   whatwg-url@5.0.0:
     dependencies:

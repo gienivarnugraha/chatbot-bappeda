@@ -3,9 +3,12 @@ import { SupabaseVectorStore } from '@langchain/community/vectorstores/supabase'
 import supabase from "./supabase";
 import { ChatOllama } from "@langchain/ollama";
 import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
-export function getModel(model: 'google' | 'openai' | 'ollama' = 'google') {
+import { InMemoryStore } from "@langchain/core/stores";
+import { CacheBackedEmbeddings } from "langchain/embeddings/cache_backed";
+
+export function getModel(model: 'google' | 'openai' | 'ollama') {
     switch (model) {
-        default:
+        case 'google':
             return new ChatGoogleGenerativeAI({
                 temperature: 0,
                 model: "gemini-2.0-flash",
@@ -28,22 +31,38 @@ export function getModel(model: 'google' | 'openai' | 'ollama' = 'google') {
 
 }
 
-export function getEmbedding(model?: 'google' | 'openai') {
+export function getEmbedding(model: 'google' | 'openai') {
     switch (model) {
         case 'google':
             return new GoogleGenerativeAIEmbeddings({
                 model: "embedding-001",
             });
 
-        default:
+        case 'openai':
             return new OpenAIEmbeddings({
                 model: "text-embedding-ada-002",
             });
     }
 }
 
+export function cachedEmbeddings(): CacheBackedEmbeddings {
+
+    const underlyingEmbeddings = getEmbedding('openai');
+
+    const inMemoryStore = new InMemoryStore<Uint8Array>();
+
+    return CacheBackedEmbeddings.fromBytesStore(
+        underlyingEmbeddings,
+        inMemoryStore,
+        {
+            namespace: underlyingEmbeddings.model,
+        }
+    );
+}
+
 export function getVectorStore(): SupabaseVectorStore {
-    const embedding = getEmbedding()
+
+    const embedding = cachedEmbeddings()
 
     return new SupabaseVectorStore(embedding, {
         client: supabase,

@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import { join, resolve, extname, basename } from 'node:path';
-import { readdir, writeFile } from 'node:fs';
+import { readdir, readFile, writeFile } from 'node:fs';
 import { PDFLoader } from "./pdfLoader";
 import postgres from 'postgres';
 import { MultiFileLoader } from 'langchain/document_loaders/fs/multi_file';
@@ -13,13 +13,15 @@ import { RunnablePassthrough, RunnableSequence } from '@langchain/core/runnables
 import { InMemoryStore } from "@langchain/core/stores";
 import { ParentDocumentRetriever } from "langchain/retrievers/parent_document";
 import { z } from 'zod'
+import { v4 as uuid } from 'uuid'
 import { inspect } from 'node:util';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 import { formatDocumentsAsString } from 'langchain/util/document';
 import { ChatMessageHistory } from 'langchain/stores/message/in_memory';
-import { generateAnswerFromDocument } from '../server/utils/rag';
+import { generateAnswerFromDocument, getRetriever } from '../server/utils/rag';
 import { spawn } from 'node:child_process';
 import { TextLoader } from "langchain/document_loaders/fs/text";
+import supabase from '../server/utils/supabase';
 
 
 const convertToMarkdown = async (command: string) => {
@@ -134,63 +136,26 @@ const listDocuments = (folderPath: string): Promise<string[]> => {
                 .map(file => join(folderPath, file))
                 .forEach(file => result.push(file))
 
+            console.warn('list files found...', result)
+
             resolve(result)
         })
     })
 }
 
-const splitDocuments = async (docs: Document[]) => {
-    const splitter = new RecursiveCharacterTextSplitter({
-        chunkSize: 10000,
-        chunkOverlap: 20,
-        separators: ["\n\n", "\n", ".", " "],
-        keepSeparator: false,
-    });
-    return await splitter.splitDocuments(docs);
-}
-
-const getRetriever = (): ParentDocumentRetriever => {
-    const store = getVectorStore()
-
-    const byteStore = new InMemoryStore<Uint8Array>();
-
-    return new ParentDocumentRetriever({
-        vectorstore: store,
-        byteStore,
-        parentSplitter: new RecursiveCharacterTextSplitter({
-            chunkOverlap: 10,
-            chunkSize: 1536 * 4,
-            separators: ["\n\n", "\n", ".", " "],
-            keepSeparator: false,
-        }),
-        childSplitter: new RecursiveCharacterTextSplitter({
-            chunkOverlap: 10,
-            chunkSize: 1536,
-            separators: ["\n\n", "\n", ".", " "],
-            keepSeparator: false,
-        }),
-        // Optional `k` parameter to search for more child documents in VectorStore.
-        // Note that this does not exactly correspond to the number of final (parent) documents
-        // retrieved, as multiple child documents can point to the same parent.
-        childK: 20,
-        // Optional `k` parameter to limit number of final, parent documents returned from this
-        // retriever and sent to LLM. This is an upper-bound, and the final count may be lower than this.
-        parentK: 5,
-    });
-}
 
 async function loadDocuments(docs: string[]): Promise<Document[]> {
-    console.log('list', docs)
-
     const loader = new MultiFileLoader(docs, {
-        // '.pdf': (path) => new PDFLoader(path, {
-        //     parsedItemSeparator: ' ',
-        //     metadata: {
-        //         filename: basename(path, extname(path)),
-        //     },
-        // }),
+        '.pdf': (path) => new PDFLoader(path, {
+            parsedItemSeparator: ' ',
+            metadata: {
+                filename: basename(path, extname(path)),
+            },
+        }),
         '.md': (path) => new TextLoader(path)
     });
+
+    console.warn('loaded documents...', loader)
 
     return await loader.load();
 }
@@ -214,27 +179,28 @@ async function summarize(docs: Document[]): Promise<Document[]> {
         }).describe("Location of the summary"),
     });
 
+    const prompt = PromptTemplate.fromTemplate(`
+            You're a helpful AI assistant. 
+
+            Given a CONTENT of a markdown content. 
+
+            - remove all header and footer text usually duplicate with page number
+            - remove unnecesary whitelines
+            - if some context contains a separated table join it into one table
+            - DO NOT REMOVE ANYTHING FROM THE CONTENT, ONLY REMOVE UNNECESARY WHITELINES, HEADER AND FOOTER TEXT
+            - Summarize in indonesian language the following document with no more than 5 sentence, and give context with no more than 5 words what is it about based on the content,
+            - and provide additional information from metadata like the title of the document, filename, page range number and line location of the information
+
+            Content:
+            {content}
+            `)
+
     const chain = RunnableSequence.from([
         {
             content: (doc: Document) => doc.pageContent,
             metadata: (doc: Document) => doc.metadata,
         },
-        PromptTemplate.fromTemplate(`
-            You're a helpful AI assistant. 
-
-            Given a context of a markdown content. 
-
-            - remove all header and footer text usually duplicate with page number
-            - remove unnecesary whitelines
-            - if some context contains a separated table join it into one table
-            - DO NOT REMOVE ANYTHING FROM THE CONTEXT, ONLY REMOVE UNNECESARY WHITELINES, HEADER AND FOOTER TEXT
-
-            Summarize in indonesian language the following document with no more than 5 sentence:\n\n{content}, 
-            and give context with no more than 5 words what is it about based on the content,
-            give section name from the document usually start with ordered number or roman number its okay if it has the same section name from previous document,
-            and provide additional information from metadata like the title of the document, source (filename or document name) , page number and line location of the information
-
-            `),
+        prompt,
         model.withStructuredOutput(queryOutput),
     ]);
 
@@ -242,7 +208,10 @@ async function summarize(docs: Document[]): Promise<Document[]> {
         maxConcurrency: 1,
     });
 
-    return summaries.map(summaryMap => {
+    const idKey = "doc_id";
+    const docIds = docs.map((_) => uuid());
+
+    const summarized = summaries.map((summaryMap, i) => {
         const { summary, content, loc, title } = summaryMap
 
         return new Document({
@@ -250,10 +219,22 @@ async function summarize(docs: Document[]): Promise<Document[]> {
             metadata: {
                 summary: summary,
                 loc: loc,
-                title: title
+                title: title,
+                [idKey]: docIds[i],
             },
         });
     });
+
+    const keyValuePairs: [string, Document][] = docs.map((originalDoc, i) => [
+        docIds[i],
+        originalDoc,
+    ]);
+
+    // const filename = summarized[0].metadata.loc.source.split('/')
+
+    // writeToFile(`${filename[filename.length - 1]}_summary.json`, JSON.stringify(summarized))
+
+    return summarized
 }
 
 const writeToFile = (filename: string, content: string) => {
@@ -268,41 +249,25 @@ async function run() {
     try {
         // await createTable()
 
-        const folderpath = resolve(join('./public', 'documents'));
+        // const folderpath = resolve(join('./public', 'documents'));
 
-        const docs = await listDocuments(folderpath)
+        // const docs = await listDocuments(folderpath)
 
-        const loaders = await loadDocuments(docs)
+        // const loaders = await loadDocuments(docs)
 
         // const model = getModel('google')
 
-        // const doc = new TextLoader('./public/documents/sampah.md')
+        // const summaries = await summarize(split)
 
-        // const loaders = await doc.load()
+        // const retriever = getRetriever()
 
-        // const markdownSplitter = new MarkdownTextSplitter({
-        //     chunkSize: 10000,
-        //     chunkOverlap: 20,
-        //     keepSeparator: false,
-        // });
+        // await retriever.addDocuments(docs);
 
-        // const split = await markdownSplitter.splitDocuments(loaders)
+        const generate = generateAnswerFromDocument()
 
-        const split = await splitDocuments(loaders)
+        const result = await generate.invoke('skenario dan proyeksi pengurangan sampah yang optimal')
 
-        const summaries = await summarize(split)
-
-        writeToFile('sampah_summary.json', JSON.stringify(summaries))
-
-        const retriever = getRetriever()
-
-        await retriever.addDocuments(summaries);
-
-        // const generate = generateAnswerFromDocument()
-
-        // const result = await generate.invoke('kuantifikasi skenario pengurangan sampah')
-
-        // console.log(inspect(result, false, null, true))
+        console.log(inspect(result, false, null, true))
 
     } catch (error) {
         console.error('error database', error)

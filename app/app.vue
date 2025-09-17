@@ -163,8 +163,8 @@ const handleCancel = () => {
 }
 
 const exampleMessage: string[] = [
-  'Tampilkan dalam tabel bank sampah yang ada di kecamatan ngaliyan',
-  'Tampilkan dalam tabel Kebutuhan Air Domestik Kecamatan Tugu',
+  'Jumlah Sampah Yang Dihasilkan Di Kota Semarang',
+  'Skenario Dan Proyeksi Pengurangan Sampah Yang Optimal',
 ]
 
 
