@@ -132,9 +132,9 @@ export const getRetriever = (): MultiVectorRetriever => {
 const getContextChain = async () => {
     const retriever = getRetriever()
 
-    // const doc = new CheerioWebBaseLoader("https://raw.githubusercontent.com/gienivarnugraha/chatbot-bappeda/refs/heads/main/public/documents/sampah.md");
+    const doc = new CheerioWebBaseLoader("https://raw.githubusercontent.com/gienivarnugraha/chatbot-bappeda/refs/heads/main/public/documents/sampah.md");
 
-    const doc = new TextLoader('./public/documents/sampah.md');
+    // const doc = new TextLoader('./public/documents/sampah.md');
 
     const documents = await doc.load()
 
