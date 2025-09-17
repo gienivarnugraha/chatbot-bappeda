@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
 
         const readable = new ReadableStream({
             async pull(controller) {
-                for await (const message of await response.stream({ question }, {
+                for await (const message of await response.stream(question, {
                     configurable: { sessionId: uuid },
                 })) {
                     console.log(message)
