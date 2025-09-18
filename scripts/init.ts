@@ -18,7 +18,7 @@ import { inspect } from 'node:util';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 import { formatDocumentsAsString } from 'langchain/util/document';
 import { ChatMessageHistory } from 'langchain/stores/message/in_memory';
-import { generateAnswerFromDocument, getRetriever } from '../server/utils/rag';
+import { generateAnswerFromDocument, getDocStore, getRetriever } from '../server/utils/rag';
 import { spawn } from 'node:child_process';
 import { TextLoader } from "langchain/document_loaders/fs/text";
 import supabase from '../server/utils/supabase';
@@ -132,7 +132,7 @@ const listDocuments = (folderPath: string): Promise<string[]> => {
             }
 
             files
-                .filter(file => extname(file).toLowerCase() === ".pdf")
+                .filter(file => extname(file).toLowerCase() === ".md")
                 .map(file => join(folderPath, file))
                 .forEach(file => result.push(file))
 
@@ -141,23 +141,6 @@ const listDocuments = (folderPath: string): Promise<string[]> => {
             resolve(result)
         })
     })
-}
-
-
-async function loadDocuments(docs: string[]): Promise<Document[]> {
-    const loader = new MultiFileLoader(docs, {
-        '.pdf': (path) => new PDFLoader(path, {
-            parsedItemSeparator: ' ',
-            metadata: {
-                filename: basename(path, extname(path)),
-            },
-        }),
-        '.md': (path) => new TextLoader(path)
-    });
-
-    console.warn('loaded documents...', loader)
-
-    return await loader.load();
 }
 
 async function summarize(docs: Document[]): Promise<Document[]> {
@@ -249,11 +232,22 @@ async function run() {
     try {
         // await createTable()
 
-        // const folderpath = resolve(join('./public', 'documents'));
+        // const folderpath = resolve(process.env.DOCUMENT_PATH as string);
 
         // const docs = await listDocuments(folderpath)
 
-        // const loaders = await loadDocuments(docs)
+        // for (let doc of docs) {
+        //     console.warn('initiating document:', doc)
+        //     await getDocStore(doc)
+        // }
+
+        // const path = `${process.env.DOCUMENT_PATH}/sampah.md`
+
+        const retriever = getRetriever()
+
+        const result = await retriever.invoke('jumlah sampah dan jumlah orang di semarang')
+
+        console.log(result.length, inspect(result, false, null, true))
 
         // const model = getModel('google')
 
@@ -263,11 +257,11 @@ async function run() {
 
         // await retriever.addDocuments(docs);
 
-        const generate = generateAnswerFromDocument()
+        // const generate = generateAnswerFromDocument()
 
-        const result = await generate.invoke('skenario dan proyeksi pengurangan sampah yang optimal')
+        // const result = await generate.invoke('skenario dan proyeksi pengurangan sampah yang optimal')
 
-        console.log(inspect(result, false, null, true))
+        // console.log(inspect(result, false, null, true))
 
     } catch (error) {
         console.error('error database', error)

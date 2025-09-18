@@ -1,8 +1,8 @@
-![](./documents/sampah/sampah.pdf-0-0.png)
-![](./documents/sampah/sampah.pdf-0-1.png)
-![](./documents/sampah/sampah.pdf-0-2.png)
+![](./sampah/sampah.pdf-0-0.png)
+![](./sampah/sampah.pdf-0-1.png)
+![](./sampah/sampah.pdf-0-2.png)
 #### **KAJIAN PENGELOLAAN SAMPAH DI TINGKAT HULU** **KOTA SEMARANG**
-![](./documents/sampah/sampah.pdf-1-0.png)
+![](./sampah/sampah.pdf-1-0.png)
 #### **Badan Perencanaan Pembangunan Daerah** **Pemerintah Kota Semarang** **Tahun 2021**
 #### **Kata Pengantar**
 Puji Syukur kami panjatkan kehadirat Tuhan Yang Maha Esa atas limpahan rahmat
@@ -333,7 +333,7 @@ dengan aman.
 Hierarki pengolahan sampah ini dijelaskan dalam model konseptual sebagai
 berikut:
 **Gambar 1. 1 Model Konseptual Optimalisasi Pengolahan Sampah di Tingkat Hulu**
-![](./documents/sampah/sampah.pdf-16-0.png)
+![](./sampah/sampah.pdf-16-0.png)
 Model hierarki pengolahan sampah ini memaksimalkan pengurangan volume sampah
 dari atas menuju ke piramida bawah. Proses pengurangan ini memberi keuntungan ekonomi
 Kajian Pengelolaan Sampah di Tingkat Hulu di Kota Semarang     - **7 -**
@@ -458,7 +458,7 @@ Kajian Pengelolaan Sampah di Tingkat Hulu di Kota Semarang - **11 -**
 |3|Kelemahan tata kelola dan pembiayaan pengurangan dan<br>penanganan sampah saat ini|Col3|Col4|
 |`o` Rencana Induk Pengelolaan<br>Sampah Kota Semarang yang<br>diperbaharui Tahun 2018.<br>`o` Kajian Pengelolaan Sampah<br>Berbasis Masyarakat Kota<br>Semarang 2018.<br>`o` Evaluasi<br>Kebijakan<br>dan<br>Strategi Pengelolaan Sampah|`o` Rencana Induk Pengelolaan<br>Sampah Kota Semarang yang<br>diperbaharui Tahun 2018.<br>`o` Kajian Pengelolaan Sampah<br>Berbasis Masyarakat Kota<br>Semarang 2018.<br>`o` Evaluasi<br>Kebijakan<br>dan<br>Strategi Pengelolaan Sampah|`o` Desk Study<br>`o` Analisa komparatif<br>terhadap kriteria|Potensi<br>perbaikan<br>sistem<br>pengelolaan sampah<br>saat ini|
 Kajian Pengelolaan Sampah di Tingkat Hulu di Kota Semarang - **12 -**
-![](./documents/sampah/sampah.pdf-22-0.png)
+![](./sampah/sampah.pdf-22-0.png)
 |4|Rekomendasi kebijakan dan strategi yang mendukung<br>peningkatan pengurangan sampah di tingkat hulu|Col3|Col4|
 |`o` Potensi<br>perbaikan<br>sistem<br>pengelolaan sampah saat ini|`o` Potensi<br>perbaikan<br>sistem<br>pengelolaan sampah saat ini|`o` Desk Study<br>`o` Analisa komparatif<br>terhadap kriteria<br>`o` FGD|Rekomendasi<br>perbaikan<br>sistem,<br>tata<br>kelola,<br>dan<br>pembiayaan<br>pengelolaan sampah|
 _Sumber: Analisis Penyusun, 2021_
@@ -508,7 +508,7 @@ Kota Semarang terletak antara garis 6°50' - 7°10' Lintang Selatan dan garis 10
 atas garis pantai.
 **Gambar 2. 1 Peta Administrasi Kota Semarang**
 Secara administrasi Kota Semarang dibagi menjadi 16 wilayah kecamatan dengan
-![](./documents/sampah/sampah.pdf-24-0.png)
+![](./sampah/sampah.pdf-24-0.png)
 jumlah kelurahan sebanyak 177 kelurahan. Luas Wilayah Kota Semarang adalah 373,70 km [2],
 dengan batas administrasi sebagai berikut :
 Sebelah barat : Kabupaten Kendal
@@ -545,9 +545,9 @@ di Kota Semarang dengan tingkat kelerengan ini meliputi kecamatan Semarang
 Barat, Semarang Selatan, candisari, Gajahmungkur, Gunungpati dan Ngaliyan.
 Kajian Pengelolaan Sampah di Tingkat Hulu di Kota Semarang     - **16 -**
 **Gambar 2. 2** **Peta Topografi Kota Semarang**
-![](./documents/sampah/sampah.pdf-26-0.png)
+![](./sampah/sampah.pdf-26-0.png)
 _Sumber: Materi Teknis Peninjauan Kembali RTRW Kota Semarang, 2016_
-![](./documents/sampah/sampah.pdf-26-1.png)
+![](./sampah/sampah.pdf-26-1.png)
 c. Lereng III (15-40 %), meliputi wilayah di sekitar Kaligarang dan Kali Kreo
 (Kecamatan Gunungpati), sebagian wilayah Kecamatan Mijen (daerah
 Wonoplumbon), sebagian wilayah Kecamatan Banyumanik dan Kecamatan
@@ -590,7 +590,7 @@ terluas terdapat di Kecamatan Tembalang yaitu 2.386 Ha. Untuk lebih jelasnya ber
 penggunaan lahan/ tanah di masing-masing Kecamatan di Kota Semarang.
 Kajian Pengelolaan Sampah di Tingkat Hulu di Kota Semarang     - **18 -**
 **Gambar 2. 3 Peta Penggunaan Lahan Kota Semarang**
-![](./documents/sampah/sampah.pdf-28-0.png)
+![](./sampah/sampah.pdf-28-0.png)
 2.1.4 Kondisi Kependudukan
 _A._ _Jumlah dan Komposisi Penduduk_
 Pada tahun 2019, jumlah penduduk di Kota Semarang tercatat sebanyak 1.814.110 jiwa.
@@ -606,7 +606,7 @@ dimana sebagian kecil penduduk berada dalam kelompok umur muda, dengan tingkat k
 turun dengan cepat serta tingkat kematian yang rendah.
 Kajian Pengelolaan Sampah di Tingkat Hulu di Kota Semarang     - **19 -**
 **Gambar 2. 4 Piramida Penduduk Kota Semarang Tahun 2019**
-![](./documents/sampah/sampah.pdf-29-0.png)
+![](./sampah/sampah.pdf-29-0.png)
 _Sumber: Kota Semarang Dalam Angka Tahun 2020_
 Secara historis, penduduk Kota Semarang selama kurun 10 tahun terakhir menunjukkan
 kecenderungan yang meningkat. Pada tahun 2010, penduduk Kota Semarang berjumlah
@@ -631,7 +631,7 @@ wilayah kepadatan tinggi akan berdampak serius terhadap dekomposisi sampah sehin
 menimbulkan bau. Hal ini menjadikan masyarakat enggan menerima penempatan TPS atau
 kontainer.
 **Gambar 2. 5 Peta Kepadatan Penduduk Kota Semarang**
-![](./documents/sampah/sampah.pdf-30-0.png)
+![](./sampah/sampah.pdf-30-0.png)
 _C._ _Proyeksi Penduduk_
 Kecenderungan laju pertumbuhan penduduk menjadi dasar perhitungan proyeksi
 timbulan sampah sampai dengan akhir tahun perencanaan. Meningkat tingkat pertumbuhan
@@ -645,7 +645,7 @@ Kajian Pengelolaan Sampah di Tingkat Hulu di Kota Semarang     - **21 -**
 penduduk menggunakan tingkat pertumbuhan 0,88% dan secara gradual menurun menjadi
 0,75% pada lima tahun terakhir jangka waktu perencanaan.
 **Gambar 2. 6 Peta Kepadatan Penduduk Kota Semarang**
-![](./documents/sampah/sampah.pdf-31-0.png)
+![](./sampah/sampah.pdf-31-0.png)
 _Sumber: COWI, 2017_
 Dengan perkiraan tersebut, perkiraan penduduk tahun 2020 dan 2030 lebih rendah dari
 angka perkiraan penduduk BPS yang berjumlah 1.814.110 jiwa (BPS, 2020). Untuk
@@ -875,7 +875,7 @@ d. Sampah dari fasilitas umum, fasilitas sosial dan fasilitas lainnya dari sumbe
 sampah dan /atau dari TPS, TPST sampai ke TPA menjadi tanggung jawab
 Pemerintah Daerah
 **Gambar 2. 7 Skema Tanggung jawab pengelolaan sampah**
-![](./documents/sampah/sampah.pdf-40-0.png)
+![](./sampah/sampah.pdf-40-0.png)
 Sebagai konsekuensi atas tata kelola pengelolaan sampah maka pembiayaan
 pengumpulan sampah dari rumah tangga sampai dengan TPS/TPS3R dibiayai oleh warga.
 Pengutipan biaya ini secara umum dikenal sebagai iuran sampah (bagi permukiman tradisional)
@@ -885,7 +885,7 @@ sampah berkisar antara Rp 5.000 - Rp 75.000, dengan distribusi sebagaimana ditun
 Tabel berikut.
 Kajian Pengelolaan Sampah di Tingkat Hulu di Kota Semarang     - **31 -**
 **Tabel 2. 8 Survei Besaran Tarif Iuran Sampah per Rumah Tangga di Kota Semarang**
-![](./documents/sampah/sampah.pdf-41-0.png)
+![](./sampah/sampah.pdf-41-0.png)
 _Sumber: Hasil Survei, 2021_
 Kisaran iuran sampah yang paling banyak adalah antara Rp 7.500-15.000, kemudian
 disusul Rp. 15.000-22.500 dan Rp. 22.500-30.000. Besaran iuran yang lain relatif kecil. Di luar
@@ -1188,7 +1188,7 @@ sampah oleh mikroorganisme dengan dukungan faktor lain yang terdapat di lingkung
 Metode pengolahan sampah organik yang paling tepat adalah melalui pembusukan yang
 dikendalikan yang dikenal dengan pengomposan atau komposting.
 **Gambar 3. 1 Sampah Organik atau Sampah Basah**
-![](./documents/sampah/sampah.pdf-51-0.png)
+![](./sampah/sampah.pdf-51-0.png)
 2. Sampah Anorganik
 Sampah anorganik adalah sampah yang tersusun dari senyawa non organik yang berasal
 dari sumber daya alam tidak terbaharui seperti mineral dan minyak bumi, atau dari proses
@@ -1220,7 +1220,7 @@ yang digunakan untuk membuat bahan-bahan tersebut dan pengurangan polusi akibat
 proses produksinya di dalam pabrik.
 Kajian Pengelolaan Sampah di Tingkat Hulu di Kota Semarang  - **43 -**
 **Gambar 3. 2 Sampah Anorganik atau Sampah Kering**
-![](./documents/sampah/sampah.pdf-53-0.png)
+![](./sampah/sampah.pdf-53-0.png)
 3. Sampah Residu
 Sampah residu merupakan sampah yang tidak dapat digunakan kembali _(reuse)_ atau didaur
 ulang _(recycle)_ maupun untuk dijadikan kompos dan biasanya sudah tidak memiliki nilai
@@ -1245,11 +1245,11 @@ membuang sisa-sisa sampah lain agar kering,
 3. Memasukkan residu ke dalam kantong dan langsung diikat mati. Hal ini agar kantong
 tidak dapat dibuka karena tidak dapat diolah di TPS/TPS3R.
 **Gambar 3. 3 Proses Pemilahan di dalam Sumber Sampah**
-![](./documents/sampah/sampah.pdf-54-1.png)
-![](./documents/sampah/sampah.pdf-54-0.png)
-![](./documents/sampah/sampah.pdf-54-2.png)
-![](./documents/sampah/sampah.pdf-54-3.png)
-![](./documents/sampah/sampah.pdf-54-4.png)
+![](./sampah/sampah.pdf-54-1.png)
+![](./sampah/sampah.pdf-54-0.png)
+![](./sampah/sampah.pdf-54-2.png)
+![](./sampah/sampah.pdf-54-3.png)
+![](./sampah/sampah.pdf-54-4.png)
 _B._ _Pewadahan_
 Wadah sampah adalah tempat untuk menyimpan sampah sementara di sumber sampah
 sedangkan pewadahan sampah adalah kegiatan menampung sampah sementara sebelum
@@ -1265,10 +1265,10 @@ Teknik Operasional Pengelolaan Sampah Perkotaan adalah sebagai berikut:
 3. Mudah dikosongkan.
 Kajian Pengelolaan Sampah di Tingkat Hulu di Kota Semarang     - **45 -**
 **Gambar 3. 4 Ilustrasi Jenis-Jenis Wadah Sampah di dalam dan di luar Rumah**
-![](./documents/sampah/sampah.pdf-55-0.png)
-![](./documents/sampah/sampah.pdf-55-1.png)
-![](./documents/sampah/sampah.pdf-55-2.png)
-![](./documents/sampah/sampah.pdf-55-3.png)
+![](./sampah/sampah.pdf-55-0.png)
+![](./sampah/sampah.pdf-55-1.png)
+![](./sampah/sampah.pdf-55-2.png)
+![](./sampah/sampah.pdf-55-3.png)
 **Di dalam rumah** **Di luar rumah**
 Karakteristik wadah sampah yaitu bentuk, sifat, bahan, volume, dan pengadaan wadah
 sampah untuk masing-masing pola pewadahan sampah dapat dilihat pada tabel berikut ini:
@@ -1298,7 +1298,7 @@ kurang lebih 0,60 m. Gerobak sampah tersebut bisa disekat menjadi dua bagian unt
 organik dan anorganik. Gerobak sampah yang sering dipakai harus secara berskala dibersihkan
 dan diperbaiki bilamana ada bagian yang rusak.
 **Gambar 3. 5 Contoh Modifikasi Moda Transportasi Sampah**
-![](./documents/sampah/sampah.pdf-56-0.png)
+![](./sampah/sampah.pdf-56-0.png)
 _Sumber: Modul Pengolahan Sampah Berbasis 3R Tahun, 2010_
 Kajian Pengelolaan Sampah di Tingkat Hulu di Kota Semarang     - **47 -**
 Gerobak sebaiknya dilengkapi dengan sapu lidi dan pengki untuk membersihkan
@@ -1425,7 +1425,7 @@ dikembalikan ke tumpukan awal agar dapat terdekomposisi sempurna, sekaligus
 membantu dekomposisi sampah organik baru.
 Kajian Pengelolaan Sampah di Tingkat Hulu di Kota Semarang     - **51 -**
 **Gambar 3. 6 Komposting Sistem Aerator Bambu**
-![](./documents/sampah/sampah.pdf-61-0.png)
+![](./sampah/sampah.pdf-61-0.png)
 _Sumber: Pedoman TPS3R Kementerian PU-PR, 2017_
 2. Teknik Takakura Susun
 Metode komposting ini dilakukan dengan menimbun sampah organik ke dalam
@@ -1447,9 +1447,9 @@ Namun metode ini membutuhkan modal yang lebih banyak karena menggunakan
 keranjang plastik dan pendukung lainnya.
 Kajian Pengelolaan Sampah di Tingkat Hulu di Kota Semarang  - **52 -**
 **Gambar 3. 7 Pengomposan Metode Takakura Susun**
-![](./documents/sampah/sampah.pdf-62-0.png)
+![](./sampah/sampah.pdf-62-0.png)
 _B._ _Pengolahan Sampah Anorganik_
-![](./documents/sampah/sampah.pdf-62-1.png)
+![](./sampah/sampah.pdf-62-1.png)
 Pengolahan sampah anorganik ditujukan untuk meningkatkan nilai jual dan kualitas
 bahan daur ulang. Cara yang biasa dilakukan adalah dengan melakukan pemilahan lebih rinci
 sebagaimana ditunjukkan dalam klasifikasi sampah anorganik pada Tabel 3.4. Pemilahan
@@ -1478,11 +1478,11 @@ dengan mekanis atau manual.
 |3.|LOGAM<br>|1. Besi<br>2. Kaleng<br>3. Aluminium<br>4. Seng|
 |4.|KACA<br>|1. Botol Kecap<br>2. Botol orson<br>3. Belingan|
 |5.|PLASTIK KEMASAN<br>|1. Plastik PE bening<br>2. Plastik PP bening<br>3. Plastik Sablon<br>4. Plastik Refill Minyak<br>5. Plastik kresek/HDPE|
-![](./documents/sampah/sampah.pdf-63-0.png)
-![](./documents/sampah/sampah.pdf-63-1.png)
-![](./documents/sampah/sampah.pdf-63-2.png)
-![](./documents/sampah/sampah.pdf-63-3.png)
-![](./documents/sampah/sampah.pdf-63-4.png)
+![](./sampah/sampah.pdf-63-0.png)
+![](./sampah/sampah.pdf-63-1.png)
+![](./sampah/sampah.pdf-63-2.png)
+![](./sampah/sampah.pdf-63-3.png)
+![](./sampah/sampah.pdf-63-4.png)
 Kajian Pengelolaan Sampah di Tingkat Hulu di Kota Semarang - **54 -**
 Harga dan jenis sampah anorganik yang dikirim atau dijual ke pelaku usaha daur ulang
 dapat beraneka ragam, bergantung pada pelaku usaha daur ulang di lingkungan setempat.
@@ -1714,7 +1714,7 @@ kcal/kg karena akan mengurangi kelayakan operasional PSEL. Interaksi pemulihan e
 bahan daur ulang, dan pembuangan sampah dapat dijelaskan seperti Gambar 4.1. berikut.
 **Gambar 4. 1 Pertukaran antara Pemulihan Energi, Bahan Daur Ulang, dan**
 **Pembuangan Sampah**
-![](./documents/sampah/sampah.pdf-72-0.png)
+![](./sampah/sampah.pdf-72-0.png)
 _Sumber: Hasil Analisa Tim Penyusun, 2021_
 Perhitungan kalor sebagai interaksi diagram di atas, menunjukkan bahwa tidak semua jenis
 sampah yang cocok untuk pemulihan energi dan daur ulang (orange) dapat diambil untuk
@@ -1801,14 +1801,14 @@ berat kompos menjadi sepertiganya atau 4.681 ton pada tahun 2020 dan meningkat m
 pengomposan sampah makanan meningkat dari 35.924 ton pada tahun 2020 dan meningkat
 menjadi 194.916 ton pada tahun 2040.
 **Gambar 4. 2 Proyeksi Pengurangan Sampah (ton) Kota Semarang Tahun 2020-2040**
-![](./documents/sampah/sampah.pdf-75-0.png)
+![](./sampah/sampah.pdf-75-0.png)
 Sumber: _Analisa Tim Penyusun, 2021_
 Kajian Pengelolaan Sampah di Tingkat Hulu di Kota Semarang     - **66 -**
 Pengurangan sampah dalam persen ditunjukkan pada Gambar 4.3, dimana pengurangan
 sampah maksimal yang dapat dilakukan sampai dengan 2030 adalah sebesar 21,12%,
 sebagaimana ditunjukkan dalam Gambar 4.3.
 **Gambar 4. 3 Proyeksi Pengurangan Sampah (%) Kota Semarang Tahun 2020-2040**
-![](./documents/sampah/sampah.pdf-76-0.png)
+![](./sampah/sampah.pdf-76-0.png)
 Dengan skenario pengurangan ini, nilai kalor sampah untuk PSEL masih terjaga 3.706
 kcal/kg pada tahun 2020 dan menurun seiring dengan peningkatan pengambilan bahan daur
 ulang sehingga menjadi 3.131 kcal/kg pada tahun 2040. Nilai kalor ini masih memenuhi syarat
@@ -1828,7 +1828,7 @@ bakar PSEL. Apabila pilihan ini dilakukan maka sampah kantong plastik direkomend
 menjadi bahan bakar PSEL karena nilai kalornya tinggi namun nilai ekonominya rendah.
 **Gambar 4. 4 Nilai Kalor Masukan PSEL pada Pengambilan Daur Ulang Skenario**
 **Progresif (kcal/kg) Kota Semarang Tahun 2020-2040**
-![](./documents/sampah/sampah.pdf-77-0.png)
+![](./sampah/sampah.pdf-77-0.png)
 Dengan merujuk perhitungan tersebut maka bahan daur ulang yang dapat diambil
 maksimal adalah 80% dari jenis-jenis sampah di bawah ini:
 - Kaca 1,12%
@@ -1943,7 +1943,7 @@ Kajian Pengelolaan Sampah di Tingkat Hulu di Kota Semarang     - **72 -**
 Dengan skala 0 untuk nilai paling rendah dan 10 untuk nilai paling tinggi, hasil
 penilaian kedua alternatif tata kelola pengumpulan sampah ditunjukkan pada Gambar 5.1
 **Gambar 5. 1** **Diagram Perbandingan Kinerja Tata Kelola Pengumpulan Sampah**
-![](./documents/sampah/sampah.pdf-82-0.png)
+![](./sampah/sampah.pdf-82-0.png)
 Hasil penilaian di atas pengumpulan sampah oleh pemerintah kota memiliki kelebihan
 terutama pada indikator efektivitas biaya, efektivitas pengumpulan, tingkat kontrol terhadap
 pengumpul sampah, dan pemerataan dan subsidi silang. Sebaliknya, tata kelola saat ini lebih
@@ -2025,7 +2025,7 @@ tambahan. Pelaku informal memberikan pelayanan yang lebih mudah seperti menjempu
 rumah yang menjual barang bekas dan bahan daur ulang.
 **Gambar 5. 2** **Diagram Jejaring Pelaku dalam Rantai Nilai (Value Chain) Daur Ulang di**
 **Kota Semarang Tahun 2021**
-![](./documents/sampah/sampah.pdf-85-0.png)
+![](./sampah/sampah.pdf-85-0.png)
 |Col1|Col2|Pelapak<br>Besar|
 ||Pengepul<br>Keliling<br><br>||
 |TPS dan<br>TPS3R<br>|||
@@ -2172,7 +2172,7 @@ Melakukan kajian pembayaran melalui e-money dan digabungkan dalam skema
 insentif dan pemantauan pengurangan sampah dengan aplikasi mobile yang sama.
 **Gambar 5. 3 Diagram Perbandingan Kinerja Tata Kelola Pengumpulan Sampah,**
 **dengan Integrasi Iuran Bulanan ke dalam Retribusi Sampah**
-![](./documents/sampah/sampah.pdf-92-0.png)
+![](./sampah/sampah.pdf-92-0.png)
 Dengan analisa pembiayaan ini maka diagram Perbandingan Kinerja Tata Kelola
 Pengumpulan Sampah mengalami perubahan terutama pada indikator pendanaan publik
 sehingga menjadi seperti Gambar di atas.
