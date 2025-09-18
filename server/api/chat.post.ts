@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
                 })) {
                     console.log(message)
                     // @ts-ignore
-                    if (/__END?\s*$/.test(message)) {
+                    if (/__END__/.test(message)) {
 
                         // @ts-ignore
                         let end = message.replace('__END__', '')
