@@ -19,10 +19,10 @@ export default defineEventHandler(async (event) => {
                 })) {
                     console.log(message)
                     // @ts-ignore
-                    if (message.includes('--END')) {
+                    if (/__END?\s*$/.test(message)) {
 
                         // @ts-ignore
-                        let end = message.replace('--END--', '')
+                        let end = message.replace('__END__', '')
 
                         controller.enqueue(end);
 

@@ -1,11 +1,11 @@
 import 'dotenv/config'
 import { join, resolve, extname, basename } from 'node:path';
-import { readdir, readFile, writeFile } from 'node:fs';
+import { readdir, readFile, statSync, writeFile, existsSync, readFileSync } from 'node:fs';
 import { PDFLoader } from "./pdfLoader";
 import postgres from 'postgres';
 import { MultiFileLoader } from 'langchain/document_loaders/fs/multi_file';
 import { MarkdownTextSplitter, RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import { Document } from "@langchain/core/documents";
+import { Document, DocumentInput } from "@langchain/core/documents";
 import { getModel, getVectorStore } from '../server/utils/ai';
 // import { generateAnswerFromDocument } from '../server/utils/rag';
 import { ChatPromptTemplate, MessagesPlaceholder, PromptTemplate } from '@langchain/core/prompts';
@@ -18,11 +18,15 @@ import { inspect } from 'node:util';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 import { formatDocumentsAsString } from 'langchain/util/document';
 import { ChatMessageHistory } from 'langchain/stores/message/in_memory';
-import { generateAnswerFromDocument, getDocStore, getRetriever } from '../server/utils/rag';
+import { generateAnswerFromDocument, getRetriever } from '../server/utils/rag';
 import { spawn } from 'node:child_process';
 import { TextLoader } from "langchain/document_loaders/fs/text";
 import supabase from '../server/utils/supabase';
+import { CheerioWebBaseLoader } from '@langchain/community/document_loaders/web/cheerio';
 
+const model = getModel('google')
+
+const idKey = 'doc_id'
 
 const convertToMarkdown = async (command: string) => {
     const sourceDirectory = './pdfs_to_convert';
@@ -143,17 +147,142 @@ const listDocuments = (folderPath: string): Promise<string[]> => {
     })
 }
 
-async function summarize(docs: Document[]): Promise<Document[]> {
-    const model = getModel('google')
+function isValidHttpURL(file: string) {
+    let url;
+
+    try {
+        url = new URL(file);
+    } catch (_) {
+        return false;
+    }
+
+    return url.protocol === "http:" || url.protocol === "https:";
+}
+
+/**
+ * Loads a document from a given file path or URL.
+ * Supports PDF, MD, DOCX, and CSV file extensions.
+ * If the file path is a URL, it will be loaded using the CheerioWebBaseLoader.
+ * If the file path is a local file, it will be loaded using the appropriate loader
+ * based on the file extension.
+ * @throws {Error} If the file extension is not supported.
+ * @param {string} file - The file path or URL to load.
+ * @returns {Promise<Document[]>} A promise that resolves to an array of loaded documents.
+ */
+export const loadDocument = async (file: string): Promise<Document[]> => {
+    let loader;
+
+    console.log('loading document...')
+
+
+    if (isValidHttpURL(file)) {
+        loader = new CheerioWebBaseLoader(file)
+    } else {
+        const extension = extname(file);
+
+        switch (extension) {
+            case '.pdf':
+                loader = new PDFLoader(file, {
+                    parsedItemSeparator: ' ',
+                });
+                break;
+            case '.md':
+                loader = new TextLoader(file);
+                break;
+            // case '.docx':
+            //     loader = new TextLoader(file);
+            //     break;
+            // case '.csv':
+            //     loader = new TextLoader(file);
+            //     break;
+            default:
+                throw new Error(`Unsupported file extension: ${extension}`);
+        }
+    }
+
+    return await loader.load();
+}
+
+/**
+ * Returns a pair of splitters for the given file extension.
+ * The parent splitter is used to split the document into chunks.
+ * The child splitter is used to split the chunks into smaller sub-chunks.
+ * The parent splitter is overridden for markdown files to use the MarkdownTextSplitter.
+ * For other file extensions, the RecursiveCharacterTextSplitter is used.
+ * @param file The file path with extension
+ * @returns An object with two properties: splitter and childSplitter
+ */
+export const documentSplitter = (file: string) => {
+    const extension = extname(file);
+
+    let splitter: RecursiveCharacterTextSplitter
+
+    const chunkOptions = {
+        chunkOverlap: 10,
+        chunkSize: 768 * 8,
+    };
+
+    if (extension === '.md') {
+        splitter = new MarkdownTextSplitter(chunkOptions)
+    } else {
+        splitter = new RecursiveCharacterTextSplitter(chunkOptions)
+
+    }
+
+    return splitter
+}
+
+/**
+ * A function that takes an array of documents as parameters and returns a promise that resolves to an object 
+ * with the following properties: title, summary, context, and source. 
+ * It uses the Google AI model to summarize the document.
+ * @param documents - A slice of array from Document instances.
+ * @returns A promise that resolves to an object with the following properties: title, summary, context, and source.
+ */
+export const getDocumentSummary = async (docs: Document[], ids: { fileId: string, docIds: string[] }) => {
+    console.log('getting documents summary...')
 
     const queryOutput = z.object({
         title: z.string().describe("Title of the document"),
         summary: z.string().describe("Summary of the document"),
-        content: z.string().describe("Full content of the document"),
+        attachment: z.optional(z.object({
+            formulas: z.optional(z.object({
+                name: z.string().describe("Formula name"),
+                description: z.string().describe("Description of the formula"),
+                formula: z.string().describe("Formula"),
+                formula_variables: z.string().describe("Formula variables description"),
+                lines: z.object({
+                    from: z.number().describe("Start line number"),
+                    to: z.number().describe("End line number"),
+                })
+                    .describe("Line number of the formula to insert later")
+            })).describe("Formulas"),
+            images: z.optional(z.object({
+                name: z.string().describe("image name"),
+                description: z.string().describe("Description of the image"),
+                image_link: z.string().describe("image"),
+                lines: z.object({
+                    from: z.number().describe("Start line number"),
+                    to: z.number().describe("End line number"),
+                })
+                    .describe("Line number of the image to insert later")
+            })),
+            charts: z.optional(z.object({
+                name: z.string().describe("image name"),
+                description: z.string().describe("Description of the image"),
+                image_link: z.string().describe("image"),
+                lines: z.object({
+                    from: z.number().describe("Start line number"),
+                    to: z.number().describe("End line number"),
+                })
+                    .describe("Line number of the image to insert later")
+            })),
+        })),
         loc: z.object({
-            pageNumber: z.number().describe("Page number"),
-            section: z.string().describe("section name from the document"),
-            source: z.string().describe("file name of the document"),
+            pageNumber: z.object({
+                from: z.number().describe("Start page number"),
+                to: z.number().describe("End page number"),
+            }).describe("Page range number"),
             lines: z.object({
                 from: z.number().describe("Start line number"),
                 to: z.number().describe("End line number"),
@@ -165,14 +294,10 @@ async function summarize(docs: Document[]): Promise<Document[]> {
     const prompt = PromptTemplate.fromTemplate(`
             You're a helpful AI assistant. 
 
-            Given a CONTENT of a markdown content. 
-
-            - remove all header and footer text usually duplicate with page number
-            - remove unnecesary whitelines
-            - if some context contains a separated table join it into one table
-            - DO NOT REMOVE ANYTHING FROM THE CONTENT, ONLY REMOVE UNNECESARY WHITELINES, HEADER AND FOOTER TEXT
-            - Summarize in indonesian language the following document with no more than 5 sentence, and give context with no more than 5 words what is it about based on the content,
-            - and provide additional information from metadata like the title of the document, filename, page range number and line location of the information
+            - Summarize in indonesian language the following document with no more than 5 sentence
+            - Give context with no more than 5 words what is it about based on the content,
+            - if any image or formula is in the document remove from content and move it to attachment along with its properties and line number
+            - and provide additional information from metadata like the title of the document, filename information
 
             Content:
             {content}
@@ -191,41 +316,201 @@ async function summarize(docs: Document[]): Promise<Document[]> {
         maxConcurrency: 1,
     });
 
-    const idKey = "doc_id";
-    const docIds = docs.map((_) => uuid());
+    console.log('successfully getting documents summary...')
 
-    const summarized = summaries.map((summaryMap, i) => {
-        const { summary, content, loc, title } = summaryMap
+    return summaries.map((summaryMap, i) => {
+        const { summary, loc, title, attachment } = summaryMap
+
+        const content = docs[i].pageContent
 
         return new Document({
             pageContent: content,
             metadata: {
-                summary: summary,
-                loc: loc,
-                title: title,
-                [idKey]: docIds[i],
+                summary,
+                loc,
+                title,
+                attachment,
+                doc_id: ids.docIds[i],
+                source_id: ids.fileId
             },
         });
     });
 
-    const keyValuePairs: [string, Document][] = docs.map((originalDoc, i) => [
-        docIds[i],
-        originalDoc,
-    ]);
 
-    // const filename = summarized[0].metadata.loc.source.split('/')
-
-    // writeToFile(`${filename[filename.length - 1]}_summary.json`, JSON.stringify(summarized))
-
-    return summarized
 }
 
-const writeToFile = (filename: string, content: string) => {
-    writeFile(`./public/documents/${filename}`, content, err => {
-        if (err) {
-            console.log(err)
+const checkFromFile = async (docs: Document[], ids: { fileId: string, docIds: string[] }, filepath: string) => {
+    const dir = process.env.DOCUMENT_PATH as string
+
+    const filename = `${basename(filepath, extname(filepath))}_summary.json`
+
+    const path = join(dir, filename)
+
+    let summaries: Document[]
+
+    if (existsSync(path)) {
+        console.log('file json exists...', path)
+
+        let json = JSON.parse(readFileSync(path, 'utf-8'))
+
+        if (docs.length !== json.length) {
+            console.log('file json exists but document length is different...', path)
+            summaries = await getDocumentSummary(docs, ids)
+
+            const content = JSON.stringify(summaries)
+
+            writeFile(path, content, err => {
+                console.log('rewriting file...', path)
+                if (err) {
+                    console.log(err, content)
+                }
+            })
+        } else {
+            console.log('retrieve exisiting file...', path)
+            summaries = json.map((doc: DocumentInput<Record<string, any>>) => new Document(doc))
         }
-    })
+
+    } else {
+        console.log('file doesnt exists', path)
+        summaries = await getDocumentSummary(docs, ids)
+
+        const content = JSON.stringify(summaries)
+
+        writeFile(path, content, err => {
+            console.log('writing new file', path)
+            if (err) {
+                console.log(err, content)
+            }
+        })
+
+    }
+
+    return summaries
+}
+
+/**
+ * Sets the vector store with the given file.
+ * If the file exists in the database, it will use the existing data.
+ * If the file does not exist in the database, it will create new data and add it to the vector store.
+ * @param {string} file - The file path with extension
+ * @returns {Promise<SupabaseVectorStore>} - A promise that resolves to a SupabaseVectorStore instance
+ */
+export const setVectorStore = async (file: string) => {
+    const vectorstore = getVectorStore()
+
+    const documents = await loadDocument(file)
+
+    const splitter = documentSplitter(file)
+
+    const docs = await splitter.splitDocuments(documents)
+
+    const filename = basename(file, extname(file))
+
+    console.log('getting ids from database...', filename)
+
+    const { data, error } = await supabase
+        .from('documents')
+        .select()
+        .ilike('filename', `%${filename}%`)
+
+    if (error) {
+        console.error('Failed to get documents from database', error)
+    }
+
+    if (data?.length) {
+        console.log('file exists in database...', filename)
+    } else {
+        console.log('file not exists in database...')
+
+        const ids = {
+            docIds: docs.map((_, i) => `${filename}_${i}`),
+            fileId: `${filename}_${uuid()}`
+        }
+
+        const summaries = await checkFromFile(docs, ids, file)
+
+        const metadata = getBasicMetadata(file)
+
+        console.log('insert new data to database...', filename)
+        await storeToDB(docs.slice(0, 5), {
+            ...ids,
+            ...metadata
+        })
+
+        console.log('adding data to vector store...', filename)
+
+        await vectorstore.addDocuments(summaries);
+
+    }
+    console.log('success adding to vector store...', filename)
+
+    return vectorstore
+}
+
+
+const getBasicMetadata = (filePath: string) => {
+    console.log('geting meta data...', filePath)
+    try {
+        const stats = statSync(filePath);
+
+        return {
+            filename: basename(filePath),
+            extension: extname(filePath),
+            filePath,
+            filesize: stats.size, // Size in bytes
+            createdAt: stats.birthtime,
+            modifiedAt: stats.mtime,
+        };
+    } catch (error) {
+        console.error(`Error getting file stats: ${error.message}`);
+        return null;
+    }
+};
+
+const storeToDB = async (data: Document[], metadata) => {
+    const queryOutput = z.object({
+        title: z.string().describe("Title of the document"),
+        summary: z.string().describe("Summary of the document"),
+    });
+
+    const { fileId, filename, docIds } = metadata
+
+
+    console.log('generating file summary ...', filename)
+
+    const prompt = PromptTemplate.fromTemplate(`
+            You're a helpful AI assistant. 
+
+            - Summarize in indonesian language the following document with no more than 5 sentence
+            - Give context with no more than 5 words what is it about based on the content,
+            - and provide additional information from metadata like the title of the document, filename information
+
+            Content:
+            {content}
+            `)
+
+    const content = formatDocumentsAsString(data)
+
+    const { title, summary } = await prompt.pipe(model.withStructuredOutput(queryOutput)).invoke({ content })
+
+    const { error } = await supabase
+        .from('documents')
+        .insert({
+            uuid: fileId,
+            title,
+            filename,
+            metadata: {
+                docIds,
+                summary,
+                ...metadata
+            }
+        })
+
+    console.log('success creating new data...', filename)
+
+    if (error) {
+        console.log('error', error)
+    }
 }
 
 async function run() {
@@ -238,16 +523,18 @@ async function run() {
 
         // for (let doc of docs) {
         //     console.warn('initiating document:', doc)
-        //     await getDocStore(doc)
+        //     await setVectorStore(doc)
         // }
 
-        // const path = `${process.env.DOCUMENT_PATH}/sampah.md`
+        // const path = `${process.env.DOCUMENT_PATH}/rispam.md`
 
-        const retriever = getRetriever()
+        // await setVectorStore(path)
 
-        const result = await retriever.invoke('jumlah sampah dan jumlah orang di semarang')
+        // const retriever = getRetriever()
 
-        console.log(result.length, inspect(result, false, null, true))
+        // const result = await retriever.invoke('jumlah sampah dan jumlah orang di semarang')
+
+        // console.log(result.length, inspect(result, false, null, true))
 
         // const model = getModel('google')
 
@@ -257,11 +544,11 @@ async function run() {
 
         // await retriever.addDocuments(docs);
 
-        // const generate = generateAnswerFromDocument()
+        const generate = generateAnswerFromDocument()
 
-        // const result = await generate.invoke('skenario dan proyeksi pengurangan sampah yang optimal')
+        const result = await generate.invoke('skenario dan proyeksi pengurangan sampah yang optimal')
 
-        // console.log(inspect(result, false, null, true))
+        console.log(inspect(result, false, null, true))
 
     } catch (error) {
         console.error('error database', error)
