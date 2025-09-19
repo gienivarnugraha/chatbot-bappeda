@@ -248,9 +248,7 @@ export const getDocumentSummary = async (docs: Document[], ids: { fileId: string
         attachment: z.optional(z.object({
             formulas: z.optional(z.object({
                 name: z.string().describe("Formula name"),
-                description: z.string().describe("Description of the formula"),
                 formula: z.string().describe("Formula"),
-                formula_variables: z.string().describe("Formula variables description"),
                 lines: z.object({
                     from: z.number().describe("Start line number"),
                     to: z.number().describe("End line number"),
@@ -259,7 +257,6 @@ export const getDocumentSummary = async (docs: Document[], ids: { fileId: string
             })).describe("Formulas"),
             images: z.optional(z.object({
                 name: z.string().describe("image name"),
-                description: z.string().describe("Description of the image"),
                 image_link: z.string().describe("image"),
                 lines: z.object({
                     from: z.number().describe("Start line number"),
@@ -268,14 +265,25 @@ export const getDocumentSummary = async (docs: Document[], ids: { fileId: string
                     .describe("Line number of the image to insert later")
             })),
             charts: z.optional(z.object({
-                name: z.string().describe("image name"),
-                description: z.string().describe("Description of the image"),
-                image_link: z.string().describe("image"),
+                name: z.string().describe("chart name"),
+                data: z.array(
+                    z.object({
+                        labels: z.string().describe("labels"),
+                        datasets: z.array(
+                            z.object({
+                                label: z.string().describe("label of dataset"),
+                                data: z.array(
+                                    z.number().describe("data in number")
+                                ),
+                            })
+                        )
+                    })
+                ).describe("chart"),
                 lines: z.object({
                     from: z.number().describe("Start line number"),
                     to: z.number().describe("End line number"),
                 })
-                    .describe("Line number of the image to insert later")
+                    .describe("Line number of the chart to insert later")
             })),
         })),
         loc: z.object({
@@ -546,7 +554,7 @@ async function run() {
 
         const generate = generateAnswerFromDocument()
 
-        const result = await generate.invoke('skenario dan proyeksi pengurangan sampah yang optimal')
+        const result = await generate.invoke('skenario dan proyeksi pengurangan sampah yang optimal dengan gambar dan tabel')
 
         console.log(inspect(result, false, null, true))
 

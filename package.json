@@ -18,6 +18,7 @@
     "@langchain/langgraph": "^0.4.1",
     "@langchain/ollama": "^0.2.4",
     "@langchain/openai": "^0.6.7",
+    "@mdit-vue/plugin-component": "^3.0.2",
     "@nuxt/eslint": "1.7.1",
     "@nuxt/ui": "3.3.0",
     "@nuxtjs/mdc": "0.17.4",
@@ -26,6 +27,8 @@
     "dotenv": "^17.2.2",
     "langchain": "^0.3.30",
     "markdown-it": "^14.1.0",
+    "markdown-it-container": "^4.0.0",
+    "markdown-it-footnote": "^4.0.0",
     "motion-v": "^1.7.1",
     "nuxt": "^4.0.1",
     "pdf-parse": "^1.1.1",
@@ -39,6 +42,10 @@
     "zod": "^4.0.14"
   },
   "devDependencies": {
+    "@mdit/plugin-container": "^0.22.1",
+    "@mdit/plugin-figure": "^0.22.1",
+    "@mdit/plugin-img-lazyload": "^0.22.1",
+    "@mdit/plugin-katex": "^0.23.1",
     "@types/pg": "^8.15.5",
     "eslint": "^9.32.0",
     "tailwindcss": "^4.1.11",

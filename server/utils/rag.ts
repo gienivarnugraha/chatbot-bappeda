@@ -3,23 +3,7 @@ import { ChatMessageHistory } from "langchain/stores/message/in_memory";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { RunnablePassthrough, RunnableSequence, RunnableWithMessageHistory } from "@langchain/core/runnables";
 import { formatDocumentsAsString } from "langchain/util/document";
-import { z } from 'zod'
 import { getVectorStore, getModel } from './ai';
-import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
-import { TextLoader } from 'langchain/document_loaders/fs/text';
-import { MarkdownTextSplitter, RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
-import { ParentDocumentRetriever } from 'langchain/retrievers/parent_document';
-import { InMemoryStore } from "@langchain/core/stores";
-import supabase from './supabase'
-import { MultiFileLoader } from 'langchain/document_loaders/fs/multi_file';
-import { Document } from "@langchain/core/documents";
-import { readdir } from 'node:fs';
-import { basename, extname, join } from "node:path";
-import { MultiVectorRetriever } from 'langchain/retrievers/multi_vector';
-import { v4 as uuid } from 'uuid'
-import { CheerioWebBaseLoader } from "@langchain/community/document_loaders/web/cheerio";
-import * as cheerio from 'cheerio';
-import { BaseDocumentLoader } from "@langchain/core/document_loaders/base";
 import { MultiQueryRetriever } from "langchain/retrievers/multi_query";
 
 let messageHistories: { [sessionId: string]: ChatMessageHistory } = {};
@@ -63,26 +47,27 @@ const getContextChain = async () => {
         formatDocumentsAsString
     ])
 }
-
+//    - if the context contains a chart, add the answer format as <Chart> component in new line
 const ANSWER_TEMPLATE = `You're a helpful deep research AI assistant. 
 
     Given a user question, and context. 
     Your task is to provide detailed answer to the user's question based ONLY on the provided context include relevant table or image if needed
+    if you are not sure with the answer, you can ask the user again to confirm the question
 
     - Return the answer with markdown format
     - Return the source of information at the end of the answer like document file name or location
-    - if the context contains a table, add the answer format as table in Markdown use title case for heading
-    - if the context contains a formula, add the answer format as formula in Markdown latex
-    - if the context contains a chart, add the answer format as chart in Markdown latex
-    - if the context contains a list, add the answer format as Markdown lists
-    - if the context contains a image, prefix the image attachment with: ${process.env.DOCUMENT_PATH}
+    - if the context contains a table, add the answer format as table in Markdown use title case for heading in new line
+    - if the context contains a formula, add the answer format as formula in Markdown katex in new line
+    - if the context contains a list, add the answer format as Markdown lists in new line
+    - if the context contains a image, replace the image base link with: ${process.env.DOCUMENT_PATH} and return as markdown image format in new line
     - Answer in indonesian language
     - End the answer with __END__
 
     Context
     {context}
 
-    Question: {question}
+    Question: 
+    {question}
 
     Answer:
     Source:

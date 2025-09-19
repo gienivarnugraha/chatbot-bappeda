@@ -43,7 +43,8 @@
         </motion.div>
 
         <!-- Question and Answer -->
-        <UCard :initial="{ scale: 0 }" :animate="{ scale: 1 }" class="w-full max-w-2xl h-full">
+        <div :initial="{ scale: 0 }" :animate="{ scale: 1 }"
+          class="w-full max-w-2xl h-full bg-gray-700 dark:bg-gray-800 p-4 rounded-lg">
           <!-- <template #header>
             
           </template> -->
@@ -95,7 +96,7 @@
                 color="secondary" v-for="message in exampleMessage"> {{ message }} </UButton>
             </div>
           </div>
-        </UCard>
+        </div>
         <!-- QnA End -->
       </div>
 
@@ -164,7 +165,7 @@ const handleCancel = () => {
 
 const exampleMessage: string[] = [
   'Jumlah Sampah Yang Dihasilkan Di Kota Semarang',
-  'Skenario Dan Proyeksi Pengurangan Sampah Yang Optimal',
+  'Skenario Dan Proyeksi Pengurangan Sampah Yang Optimal Dengan Gambar Dan Tabel',
 ]
 
 
@@ -222,7 +223,7 @@ const handleSubmit = async () => {
         messages.value[lastMessageIndex].message = await markdownToHtml(markdownMessage)
 
         //@ts-ignore
-        console.log(messages.value[lastMessageIndex].message)
+        // console.log(messages.value[lastMessageIndex].message)
 
         break
       }
